@@ -1,25 +1,52 @@
-import logo from './logo.svg';
-import './App.css';
+import { ColorModeContext, useMode } from "./theme";
+import { CssBaseline, ThemeProvider } from "@mui/material";
+import { Routes, Route } from "react-router-dom";
+import { MyProSidebarProvider } from "./pages/global/sidebar/sidebarContext";
 
-function App() {
+import Topbar from "./pages/global/Topbar";
+
+import Dashboard from "./pages/dashboard";
+import Team from "./pages/team";
+import Invoices from "./pages/invoices";
+import Contacts from "./pages/contacts";
+import Registration from "./pages/registration";
+
+const App = () => {
+  const [theme, colorMode] = useMode();
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    
+    <ColorModeContext.Provider value={colorMode}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Routes>
+        <Route
+                  path="/"
+                  element={<Registration />}
+                />
+        
+        </Routes>
+        <MyProSidebarProvider>
+          <div style={{ height: "100%", width: "100%" }}>
+            <main>
+              {/* Topbar */}
+              <Topbar />
+
+              {/* Routes */}
+              <Routes>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/upload-video" element={<Team />} />
+                <Route path="/add-live-cameras" element={<Contacts />} />
+                <Route path="/profile" element={<Invoices />} />
+
+                {/* Registration route without the topbar, sidebar, and other components */}
+                
+              </Routes>
+            </main>
+          </div>
+        </MyProSidebarProvider>
+      </ThemeProvider>
+    </ColorModeContext.Provider>
   );
-}
+};
 
 export default App;
