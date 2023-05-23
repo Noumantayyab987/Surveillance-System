@@ -258,7 +258,7 @@ function Registration() {
 
         setIsLoggedIn(true); // Set login status to true
 
-        window.location.href = 'http://localhost:3000/dashboard';
+        window.location.href = 'https://mellifluous-pastelito-6101d6.netlify.app/dashboard';
       } else if (response.status === 404) {
         setSuccessMessage('');
         setErrorMessage('Invalid email or password.');
