@@ -28,7 +28,7 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: #5adeff;
+  background: #141b2d;
 
   @keyframes dropletAnim {
     0% {
@@ -66,8 +66,8 @@ const SignUpContainer = styled.div`
   border-radius: 10px;
   /* Add border animation */ 
 
-  background: #fff;
-  color:#00bdfe;
+  background: #1F2A40;
+  color:#70d8bd;
 
   position: relative;
   &::before {
@@ -103,8 +103,8 @@ const SignInContainer = styled.div`
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-radius: 10px;
-  background: #fff;
-  color:#00bdfe;
+  background: #1F2A40;
+  color:#70d8bd;
   /* Add border animation */
   position: relative;
   &::before {
@@ -141,7 +141,7 @@ const Input = styled.input`
   margin-top: 1rem;
   padding: 0.8rem 1.5rem;
   border-radius: 0.4rem;
-  color: #1e88e5;
+  color: white;
   transition: all 0.3s ease-in-out;
   background: rgba(74, 144, 226, 0);
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
@@ -153,7 +153,7 @@ const Input = styled.input`
   
   &:hover {
     cursor: pointer;
-    color: black;
+  color:#70d8bd;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
   }
   
@@ -181,12 +181,12 @@ const Button = styled.button`
   border: 1px solid rgba(255, 255, 255, 0.18);
   margin-top: 10%;
   border: 2px solid rgba(255, 255, 255, 0.18);
-  border-color: #1e88e5;
-  background: #00bdfe;
+  background: rgb(20, 27, 45)   
+  color: #70d8bd;
 
   &:hover {
     cursor: pointer;
-    color: black;
+    color: #70d8bd;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
   }
 `;

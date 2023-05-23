@@ -6,9 +6,9 @@ import { MyProSidebarProvider } from "./pages/global/sidebar/sidebarContext";
 import Topbar from "./pages/global/Topbar";
 
 import Dashboard from "./pages/dashboard";
-import Team from "./pages/team";
-import Invoices from "./pages/invoices";
-import Contacts from "./pages/contacts";
+import Team from "./pages/addVideo";
+import Invoices from "./pages/profile";
+import Contacts from "./pages/addCamera";
 import Registration from "./pages/registration";
 
 const App = () => {

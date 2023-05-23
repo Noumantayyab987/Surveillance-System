@@ -28,16 +28,12 @@ const Dashboard = () => {
   const theme = useTheme();
   const smScreen = useMediaQuery(theme.breakpoints.up("sm"));
   const colors = tokens(theme.palette.mode);
-  const [uploadedVideo, setUploadedVideo] = useState(null);
-  const [uploadedImage, setUploadedImage] = useState(null);
+  const [setUploadedImage] = useState(null);
   const [accuracyLevel, setAccuracyLevel] = useState("low");
   const [openCameraDialog, setOpenCameraDialog] = useState(false);
   const [cameras, setCameras] = useState([]);
 
-  const handleVideoUpload = (event) => {
-    const file = event.target.files[0];
-    setUploadedVideo(file);
-  };
+
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
@@ -95,7 +91,7 @@ const Dashboard = () => {
             }}
             onClick={handleStartReidentify}
           >
-            Download Log File
+            Start Re-Identify
           </Button>
         </Box>
       </Box>
@@ -188,8 +184,7 @@ const Dashboard = () => {
             width="100%"
             backgroundColor={colors.primary[400]}
             display="flex"
-            alignItems="center"
-            justifyContent="center"
+            
           >
             <label htmlFor="image-upload" style={{ cursor: "pointer" }}>
               <input
@@ -217,18 +212,9 @@ const Dashboard = () => {
             width="100%"
             backgroundColor={colors.primary[400]}
             display="flex"
-            alignItems="center"
-            justifyContent="center"
+           
           >
-            <Select
-              value={accuracyLevel}
-              onChange={handleAccuracyLevelChange}
-              style={{ color: colors.grey[100] }}
-            >
-              <MenuItem value="low">Low</MenuItem>
-              <MenuItem value="medium">Medium</MenuItem>
-              <MenuItem value="high">High</MenuItem>
-            </Select>
+            
             <StatBox
               title="Accuracy Level"
               subtitle="Set Re-Identification Accuracy"
@@ -238,6 +224,15 @@ const Dashboard = () => {
                 />
               }
             />
+            <Select
+              value={accuracyLevel}
+              onChange={handleAccuracyLevelChange}
+              style={{ color: colors.grey[100] }}
+            >
+              <MenuItem value="low">Low</MenuItem>
+              <MenuItem value="medium">Medium</MenuItem>
+              <MenuItem value="high">High</MenuItem>
+            </Select>
           </Box>
         </Grid>
 

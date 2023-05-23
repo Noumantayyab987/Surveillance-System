@@ -1,18 +1,17 @@
 import {
   Box,
   Button,
-  IconButton,
-  Typography,
+
   useTheme,
   useMediaQuery,
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { tokens } from "../../theme";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
-import EmailIcon from "@mui/icons-material/Email";
-import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import TrafficIcon from "@mui/icons-material/Traffic";
+import VideoLibraryIcon from "@mui/icons-material/VideoLibrary";
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
+import ScheduleIcon from "@mui/icons-material/Schedule";
+import AssessmentIcon from "@mui/icons-material/Assessment";
 import Header from "../../components/Header";
 import StatBox from "../../components/StatBox";
 
@@ -60,10 +59,10 @@ const Dashboard = () => {
             <StatBox
               title="12,361"
               subtitle="Re-Identify with Video Footage " 
-              progress="0.75"
-              increase="+14%"
+              progress="1.75"
+              increase="100%"
               icon={
-                <EmailIcon
+                <VideoLibraryIcon
                   sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
                 />
               }
@@ -81,10 +80,10 @@ const Dashboard = () => {
             <StatBox
               title="431,225"
               subtitle="Re-Identify with Live-Cameras"
-              progress="0.50"
-              increase="+21%"
+              progress="1.50"
+              increase="100%"
               icon={
-                <PointOfSaleIcon
+                <CameraAltIcon
                   sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
                 />
               }
@@ -101,11 +100,12 @@ const Dashboard = () => {
           >
             <StatBox
               title="32,441"
-              subtitle="How Many Times You Use"
-              progress="0.30"
-              increase="+5%"
+              subtitle="How Many Times You Re-identify persons"
+              progress="2.30"
+              increase="100%"
+
               icon={
-                <PersonAddIcon
+                <ScheduleIcon
                   sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
                 />
               }
@@ -123,10 +123,10 @@ const Dashboard = () => {
             <StatBox
               title="1,325,134"
               subtitle="Accuracy Rate"
-              progress="0.80"
-              increase="+43%"
+              progress="2.80"
+              increase="100%"
               icon={
-                <TrafficIcon
+                <AssessmentIcon
                   sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
                 />
               }
