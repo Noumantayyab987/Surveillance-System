@@ -15,6 +15,8 @@ const App = () => {
   const [theme, colorMode] = useMode();
   const [accessToken, setAccessToken] = useState();
 
+ 
+
   useEffect(() => {
     // Retrieve the access token from cookies
     const cookies = document.cookie.split("; ");
@@ -27,13 +29,17 @@ const App = () => {
     }
   }, []);
 
-  // Function to check if the user has access token
+  // Function to check if the user has access token in
   const isAuthenticated = () => {
     return !!accessToken;
   }
 
   return (
+    
     <ColorModeContext.Provider value={colorMode}>
+      
+      
+
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <Routes>
@@ -47,69 +53,69 @@ const App = () => {
               )
             }
           />
-          <Route
-            path="/dashboard"
-            element={
-              isAuthenticated() ? (
-                <>
-                  <Topbar />
-                  <MyProSidebarProvider>
-                    <Dashboard />
-                  </MyProSidebarProvider>
-                </>
-              ) : (
-                <Navigate to="/" />
-              )
-            }
-          />
-          <Route
-            path="/upload-video"
-            element={
-              isAuthenticated() ? (
-                <>
-                  <Topbar />
-                  <MyProSidebarProvider>
-                    <UploadVideo />
-                  </MyProSidebarProvider>
-                </>
-              ) : (
-                <Navigate to="/" />
-              )
-            }
-          />
-          <Route
-            path="/add-live-cameras"
-            element={
-              isAuthenticated() ? (
-                <>
-                  <Topbar />
-                  <MyProSidebarProvider>
-                    <AddCamera />
-                  </MyProSidebarProvider>
-                </>
-              ) : (
-                <Navigate to="/" />
-              )
-            }
-          />
-          <Route
-            path="/video-history"
-            element={
-              isAuthenticated() ? (
-                <>
-                  <Topbar />
-                  <MyProSidebarProvider>
-                    <VideoHistory />
-                  </MyProSidebarProvider>
-                </>
-              ) : (
-                <Navigate to="/" />
-              )
-            }
-          />
         </Routes>
+        <MyProSidebarProvider>
+          <div style={{ height: "100%", width: "100%" }}>
+            <main>
+              {/* Topbar */}
+              <Topbar />
+
+              {/* Routes */}
+              <Routes>
+                {/* Protected routes */}
+                <Route 
+                  path="/dashboard"
+                  element={
+                    isAuthenticated() ? (
+                      <Dashboard />
+                    ) : (
+                      <Navigate to="/" />
+                    )
+                  }
+                />
+                <Route
+                  path="/upload-video"
+                  element={
+                    isAuthenticated() ? (
+                      <UploadVideo />
+                    ) : (
+                      <Navigate to="/" />
+                    )
+                  }
+                />
+                <Route
+                  path="/add-live-cameras"
+                  element={
+                    isAuthenticated() ? (
+                      <AddCamera />
+                    ) : (
+                      <Navigate to="/" />
+                    )
+                  }
+                  />
+                
+                <Route
+                  path="/video-history"
+                  element={
+                    isAuthenticated() ? (
+                      <VideoHistory />
+                    ) : (
+                      <Navigate to="/" />
+                    )
+                  }
+                />
+
+                {/* Registration route without the topbar, sidebar, and other components */}
+                
+
+              </Routes>
+            </main>
+          </div>
+        </MyProSidebarProvider>
       </ThemeProvider>
+      
     </ColorModeContext.Provider>
+    
   );
 };
 
