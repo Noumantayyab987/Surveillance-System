@@ -24,6 +24,8 @@ import Header from "../../components/Header";
 import StatBox from "../../components/StatBox";
 import { Select, MenuItem } from "@mui/material";
 
+
+
 const Dashboard = () => {
   const theme = useTheme();
   const smScreen = useMediaQuery(theme.breakpoints.up("sm"));
@@ -33,6 +35,9 @@ const Dashboard = () => {
   const [openCameraDialog, setOpenCameraDialog] = useState(false);
   const [cameras, setCameras] = useState([]);
 
+
+  
+  
 
 
   const handleImageUpload = (event) => {

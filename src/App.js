@@ -1,29 +1,60 @@
 import { ColorModeContext, useMode } from "./theme";
 import { CssBaseline, ThemeProvider } from "@mui/material";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { MyProSidebarProvider } from "./pages/global/sidebar/sidebarContext";
+import { useEffect, useState } from "react";
 
 import Topbar from "./pages/global/Topbar";
-
 import Dashboard from "./pages/dashboard";
-import Team from "./pages/addVideo";
-import Invoices from "./pages/profile";
-import Contacts from "./pages/addCamera";
+import UploadVideo from "./pages/addVideo";
+import Profile from "./pages/profile";
+import AddCamera from "./pages/addCamera";
 import Registration from "./pages/registration";
+import VideoHistory from "./pages/videoHistory";
 
 const App = () => {
   const [theme, colorMode] = useMode();
+  const [accessToken, setAccessToken] = useState();
+
+  const handleLogout = () => {
+    // Clear cookies or perform any other logout logic
+    document.cookie = 'access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    // Redirect to the login page or any other desired page
+    window.location.href = '/';
+  };
+
+  useEffect(() => {
+    // Retrieve the access token from cookies
+    const cookies = document.cookie.split("; ");
+    for (let i = 0; i < cookies.length; i++) {
+      const parts = cookies[i].split("=");
+      if (parts[0] === "access_token") {
+        setAccessToken(parts[1]);
+        break;
+      }
+    }
+  }, []);
+
+  // Function to check if the user has access token in
+  const isAuthenticated = () => {
+    return !!accessToken;
+  }
+
   return (
-    
     <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <Routes>
-        <Route
-                  path="/"
-                  element={<Registration />}
-                />
-        
+          <Route
+            path="/"
+            element={
+              isAuthenticated() ? (
+                <Navigate to="/dashboard" />
+              ) : (
+                <Registration />
+              )
+            }
+          />
         </Routes>
         <MyProSidebarProvider>
           <div style={{ height: "100%", width: "100%" }}>
@@ -33,13 +64,52 @@ const App = () => {
 
               {/* Routes */}
               <Routes>
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/upload-video" element={<Team />} />
-                <Route path="/add-live-cameras" element={<Contacts />} />
-                <Route path="/profile" element={<Invoices />} />
+                {/* Protected routes */}
+                <Route 
+                  path="/dashboard"
+                  element={
+                    isAuthenticated() ? (
+                      <Dashboard />
+                    ) : (
+                      <Navigate to="/" />
+                    )
+                  }
+                />
+                <Route
+                  path="/upload-video"
+                  element={
+                    isAuthenticated() ? (
+                      <UploadVideo />
+                    ) : (
+                      <Navigate to="/" />
+                    )
+                  }
+                />
+                <Route
+                  path="/add-live-cameras"
+                  element={
+                    isAuthenticated() ? (
+                      <AddCamera />
+                    ) : (
+                      <Navigate to="/" />
+                    )
+                  }
+                  />
+                
+                <Route
+                  path="/video-history"
+                  element={
+                    isAuthenticated() ? (
+                      <VideoHistory />
+                    ) : (
+                      <Navigate to="/" />
+                    )
+                  }
+                />
 
                 {/* Registration route without the topbar, sidebar, and other components */}
                 
+
               </Routes>
             </main>
           </div>
