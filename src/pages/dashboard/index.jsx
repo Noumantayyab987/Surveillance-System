@@ -25,6 +25,7 @@ const Dashboard = () => {
 
   const [userData, setUserData] = useState(null);
 
+  
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -41,6 +42,12 @@ const Dashboard = () => {
             setUserData(data);
           } else {
             console.error("Failed to fetch user data:", response.status);
+            if (response.status === 401) {
+              // Clear the access token from cookies
+              document.cookie =
+                "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+              console.log("Access token expired. Cleared from cookies.");
+            }
           }
         } else {
           console.error("Access token not found in cookies.");
