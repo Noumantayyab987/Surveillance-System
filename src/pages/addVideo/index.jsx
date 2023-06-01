@@ -19,8 +19,7 @@ const Dashboard = () => {
   const theme = useTheme();
   const smScreen = useMediaQuery(theme.breakpoints.up("sm"));
   const colors = tokens(theme.palette.mode);
-  const [videos, setVideos] = useState([]);
-  const [selectedVideo, setSelectedVideo] = useState(null);
+  const [video, setVideo] = useState(null);
   const [pictures, setPictures] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [reIdentifyInProgress, setReIdentifyInProgress] = useState(false);
@@ -28,10 +27,7 @@ const Dashboard = () => {
   const [displayMessage, setDisplayMessage] = useState("");
 
   const handleVideoUpload = (e) => {
-    const newVideos = [...videos];
-    newVideos.push(e.target.files[0]);
-    setVideos(newVideos);
-    setSelectedVideo(e.target.files[0]);
+    setVideo(e.target.files[0]);
   };
 
   const handlePictureUpload = (e) => {
@@ -42,10 +38,6 @@ const Dashboard = () => {
     setPictures(newPictures);
     setSelectedImage(e.target.files[0]);
   };
-
-
-
-
 
   function getCookie(name) {
     const cookieValue = document.cookie.match(
@@ -67,18 +59,16 @@ const Dashboard = () => {
     );
 
     const formData = new FormData();
-    formData.append("video", selectedVideo, selectedVideo.name);
+    formData.append("video", video, video.name);
 
     for (let i = 0; i < pictures.length; i++) {
       formData.append("target_image", selectedImage, pictures[i].name);
     }
-    console.log("Videos:", videos);
-console.log("Pictures:", pictures);
 
-if (!videos || !pictures || reIdentifyInProgress) {
-  console.log("Invalid videos or pictures");
-  return;
-}
+    if (!video || !pictures.length || reIdentifyInProgress) {
+      console.log("Invalid video or pictures");
+      return;
+    }
 
     try {
       const apiUrl = `https://34.30.143.245/video-reid/upload?accuracy=${accuracyLevel}`;
@@ -103,6 +93,16 @@ if (!videos || !pictures || reIdentifyInProgress) {
 
   const handleAccuracyLevelChange = (e) => setAccuracyLevel(e.target.value);
 
+  const handleDeleteVideo = () => {
+    setVideo(null);
+  };
+
+  const handleDeletePicture = (index) => {
+    const newPictures = [...pictures];
+    newPictures.splice(index, 1);
+    setPictures(newPictures);
+  };
+
   return (
     <Box m="20px">
       {/* HEADER */}
@@ -125,7 +125,7 @@ if (!videos || !pictures || reIdentifyInProgress) {
               padding: "10px 20px",
             }}
             onClick={handleReIdentifyStart}
-            disabled={!videos || !pictures || reIdentifyInProgress}
+            disabled={!video || pictures.length === 0 || reIdentifyInProgress}
           >
             {reIdentifyInProgress ? "Re-Identifying in process..." : "Start Re-Identify"}
           </Button>
@@ -158,31 +158,7 @@ if (!videos || !pictures || reIdentifyInProgress) {
                 }
               />
             </label>
-            {videos && (
-              <Box ml={1}>
-                <Typography variant="subtitle2">{videos.name}</Typography>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  sx={{ mt: 1 }}
-                  onClick={() => {
-                    // Handle view video
-                  }}
-                >
-                  View
-                </Button>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  sx={{ mt: 1 }}
-                  onClick={() => {
-                    // Handle delete video
-                  }}
-                >
-                  Delete
-                </Button>
-              </Box>
-            )}
+            
           </Box>
         </Grid>
 
@@ -210,31 +186,7 @@ if (!videos || !pictures || reIdentifyInProgress) {
                 }
               />
             </label>
-            {pictures && (
-              <Box ml={1}>
-                <Typography variant="subtitle2">{pictures.name}</Typography>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  sx={{ mt: 1 }}
-                  onClick={() => {
-                    // Handle view image
-                  }}
-                >
-                  View
-                </Button>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  sx={{ mt: 1 }}
-                  onClick={() => {
-                    // Handle delete image
-                  }}
-                >
-                  Delete
-                </Button>
-              </Box>
-            )}
+            
           </Box>
         </Grid>
 
@@ -281,31 +233,72 @@ if (!videos || !pictures || reIdentifyInProgress) {
               justifyContent="center"
               p={2}
             >
-              {videos.map((video, index) => (
-              <div key={index} className="picture-item">
-                <video src={URL.createObjectURL(video)} className="uploaded-image"  height={100} width={100} onMouseEnter={(e) => e.target.play()}onMouseLeave={(e) => e.target.pause()}/>
-
-              </div>
-            ))}
               {pictures.map((picture, index) => (
-  <div key={index} className="picture-item">
-    {/* eslint-disable-next-line */}
-    <img
-      src={URL.createObjectURL(picture)}
-      className="uploaded-image"
-      alt={`Uploaded Image ${index}`}
-      height={100}
-      width={100}
-    />
-  </div>
-))}
-             
+                <div key={index} className="picture-item">
+                  {/* eslint-disable-next-line */}
+                  <img
+                    src={URL.createObjectURL(picture)}
+                    className="uploaded-image"
+                    alt={`Uploaded Image ${index}`}
+                    height={100}
+                    width={100}
+                  />
+                  {pictures.map((picture, index) => (
+              <Box key={index} ml={1}>
+                <Typography variant="subtitle2">{picture.name}</Typography>
+                
+                <Button
+                  variant="outlined"
+                  size="small"
+                  sx={{ mt: 1,
+                  color: "#FFFFFF", // Text color
+                  backgroundColor: "#FF0000", // Background color
+                  }}
+                  onClick={() => handleDeletePicture(index)}
+                >
+                  Delete
+                </Button>
+              </Box>
+            ))}
+                </div>
+              ))}
+              {video && (
+                <div className="picture-item">
+                  <video
+                    src={URL.createObjectURL(video)}
+                    className="uploaded-image"
+                    height={100}
+                    width={100}
+                    onMouseEnter={(e) => e.target.play()}
+                    onMouseLeave={(e) => e.target.pause()}
+                    
+                  />
+                  
+                  {video && (
+              <Box ml={1}>
+                <Typography variant="subtitle2">{video.name}</Typography>
+                
+                <Button
+                  variant="outlined"
+                  size="small"
+                  sx={{ mt: 1,
+                    color: "#FFFFFF", // Text color
+                    backgroundColor: "#FF0000", // Background color
+                    }}
+                  onClick={handleDeleteVideo}
+                >
+                  Delete
+                </Button>
+              </Box>
+            )}
+                </div>
+              )}
             </Box>
           </Box>
           {displayMessage && <p className="message">{displayMessage}</p>}
-
+          
         </Grid>
-        
+
       </Grid>
     </Box>
   );
