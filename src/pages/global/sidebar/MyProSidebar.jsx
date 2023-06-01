@@ -1,4 +1,3 @@
-// docs https://github.com/azouaoui-med/react-pro-sidebar
 import { useEffect, useState } from "react";
 import { Menu, Sidebar, MenuItem } from "react-pro-sidebar";
 import { useProSidebar } from "react-pro-sidebar";
@@ -15,14 +14,12 @@ import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import SwitchRightOutlinedIcon from "@mui/icons-material/SwitchRightOutlined";
 import SwitchLeftOutlinedIcon from "@mui/icons-material/SwitchLeftOutlined";
+
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
-
-  const [userData, setUserData] = useState(null);
-
-  
+  const [setUserData] = useState(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -50,7 +47,7 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
     };
 
     fetchUserData();
-  }, []);
+  }, [setUserData]);
 
   const getCookieValue = (name) => {
     const cookies = document.cookie.split("; ");
@@ -63,7 +60,6 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
     return null;
   };
 
-
   return (
     <MenuItem
       active={selected === title}
@@ -72,7 +68,6 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
       icon={icon}
       routerLink={<Link to={to} />}
     >
-
       <Typography>{title}</Typography>
     </MenuItem>
   );
@@ -86,7 +81,6 @@ const MyProSidebar = () => {
   const { collapseSidebar, toggleSidebar, collapsed, broken } = useProSidebar();
 
   const [userData, setUserData] = useState(null);
-
 
   const handleLogout = () => {
     // Clear cookies or perform any other logout logic
@@ -121,7 +115,7 @@ const MyProSidebar = () => {
     };
 
     fetchUserData();
-  }, []);
+  }, [setUserData]);
 
   const getCookieValue = (name) => {
     const cookies = document.cookie.split("; ");

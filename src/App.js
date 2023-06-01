@@ -7,7 +7,6 @@ import { useEffect, useState } from "react";
 import Topbar from "./pages/global/Topbar";
 import Dashboard from "./pages/dashboard";
 import UploadVideo from "./pages/addVideo";
-import Profile from "./pages/profile";
 import AddCamera from "./pages/addCamera";
 import Registration from "./pages/registration";
 import VideoHistory from "./pages/videoHistory";
@@ -16,12 +15,7 @@ const App = () => {
   const [theme, colorMode] = useMode();
   const [accessToken, setAccessToken] = useState();
 
-  const handleLogout = () => {
-    // Clear cookies or perform any other logout logic
-    document.cookie = 'access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-    // Redirect to the login page or any other desired page
-    window.location.href = '/';
-  };
+ 
 
   useEffect(() => {
     // Retrieve the access token from cookies
