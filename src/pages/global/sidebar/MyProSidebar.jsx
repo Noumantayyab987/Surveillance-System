@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Menu, Sidebar, MenuItem } from "react-pro-sidebar";
 import { useProSidebar } from "react-pro-sidebar";
+import { useLocation } from "react-router-dom";
 
 import { useSidebarContext } from "./sidebarContext";
 
@@ -26,7 +27,7 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
       try {
         const accessToken = getCookieValue("access_token");
         if (accessToken) {
-          const response = await fetch("https://34.30.143.245/user/me", {
+          const response = await fetch("https://34.27.112.52/user/me", {
             headers: {
               Authorization: `Bearer ${accessToken}`,
               accept: "application/json",
@@ -79,7 +80,8 @@ const MyProSidebar = () => {
   const [selected, setSelected] = useState("Dashboard");
   const { sidebarRTL, setSidebarRTL, sidebarImage } = useSidebarContext();
   const { collapseSidebar, toggleSidebar, collapsed, broken } = useProSidebar();
-
+  const location = useLocation();
+  const isRegistrationPage = location.pathname === "/registration";
   const [userData, setUserData] = useState(null);
 
   const handleLogout = () => {
@@ -94,7 +96,7 @@ const MyProSidebar = () => {
       try {
         const accessToken = getCookieValue("access_token");
         if (accessToken) {
-          const response = await fetch("https://34.30.143.245/user/me", {
+          const response = await fetch("https://34.27.112.52/user/me", {
             headers: {
               Authorization: `Bearer ${accessToken}`,
               accept: "application/json",
@@ -131,10 +133,11 @@ const MyProSidebar = () => {
 
 
   return (
+    
     <Box
       sx={{
         position: "sticky",
-        display: "flex",
+        display: isRegistrationPage ? "none" : "flex",
         height: "100vh",
         top: 0,
         bottom: 0,

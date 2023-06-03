@@ -71,7 +71,7 @@ const Dashboard = () => {
     }
 
     try {
-      const apiUrl = `https://34.30.143.245/video-reid/upload?accuracy=${accuracyLevel}`;
+      const apiUrl = `https://34.27.112.52/video-reid/upload?accuracy=${accuracyLevel}`;
       const response = await fetch(apiUrl, {
         method: "POST",
         body: formData,

@@ -22,7 +22,7 @@ const Dashboard = () => {
       try {
         const accessToken = getCookieValue("access_token");
         if (accessToken) {
-          const response = await fetch("https://34.30.143.245/user/me", {
+          const response = await fetch("https://34.27.112.52/user/me", {
             headers: {
               Authorization: `Bearer ${accessToken}`,
               accept: "application/json",

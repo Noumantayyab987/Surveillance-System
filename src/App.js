@@ -15,8 +15,6 @@ const App = () => {
   const [theme, colorMode] = useMode();
   const [accessToken, setAccessToken] = useState();
 
- 
-
   useEffect(() => {
     // Retrieve the access token from cookies
     const cookies = document.cookie.split("; ");
@@ -29,93 +27,85 @@ const App = () => {
     }
   }, []);
 
-  // Function to check if the user has access token in
+  // Function to check if the user has access token
   const isAuthenticated = () => {
     return !!accessToken;
-  }
+  };
 
   return (
-    
     <ColorModeContext.Provider value={colorMode}>
-      
-      
-
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <Routes>
           <Route
+            path="/registration"
+            element={<Registration />}
+          />
+          <Route
             path="/"
             element={
-              isAuthenticated() ? (
-                <Navigate to="/dashboard" />
-              ) : (
-                <Registration />
-              )
+              isAuthenticated() ? <Navigate to="/dashboard" /> : <Registration />
             }
           />
         </Routes>
-        <MyProSidebarProvider>
-          <div style={{ height: "100%", width: "100%" }}>
-            <main>
-              {/* Topbar */}
-              <Topbar />
+        {isAuthenticated() && (
+          <MyProSidebarProvider>
+            <div style={{ height: "100%", width: "100%" }}>
+              <main>
+                {/* Topbar */}
+                <Topbar />
 
-              {/* Routes */}
-              <Routes>
-                {/* Protected routes */}
-                <Route 
-                  path="/dashboard"
-                  element={
-                    isAuthenticated() ? (
-                      <Dashboard />
-                    ) : (
-                      <Navigate to="/" />
-                    )
-                  }
-                />
-                <Route
-                  path="/upload-video"
-                  element={
-                    isAuthenticated() ? (
-                      <UploadVideo />
-                    ) : (
-                      <Navigate to="/" />
-                    )
-                  }
-                />
-                <Route
-                  path="/add-live-cameras"
-                  element={
-                    isAuthenticated() ? (
-                      <AddCamera />
-                    ) : (
-                      <Navigate to="/" />
-                    )
-                  }
+                {/* Routes */}
+                <Routes>
+                  {/* Protected routes */}
+                  <Route
+                    path="/dashboard"
+                    element={
+                      isAuthenticated() ? (
+                        <Dashboard />
+                      ) : (
+                        <Navigate to="/" />
+                      )
+                    }
                   />
-                
-                <Route
-                  path="/video-history"
-                  element={
-                    isAuthenticated() ? (
-                      <VideoHistory />
-                    ) : (
-                      <Navigate to="/" />
-                    )
-                  }
-                />
+                  <Route
+                    path="/upload-video"
+                    element={
+                      isAuthenticated() ? (
+                        <UploadVideo />
+                      ) : (
+                        <Navigate to="/" />
+                      )
+                    }
+                  />
+                  <Route
+                    path="/add-live-cameras"
+                    element={
+                      isAuthenticated() ? (
+                        <AddCamera />
+                      ) : (
+                        <Navigate to="/" />
+                      )
+                    }
+                  />
 
-                {/* Registration route without the topbar, sidebar, and other components */}
-                
-
-              </Routes>
-            </main>
-          </div>
-        </MyProSidebarProvider>
+                  <Route
+                    path="/video-history"
+                    element={
+                      isAuthenticated() ? (
+                        <VideoHistory />
+                      ) : (
+                        <Navigate to="/" />
+                      )
+                    }
+                  />
+                </Routes>
+              </main>
+            </div>
+          </MyProSidebarProvider>
+        )}
       </ThemeProvider>
-      
     </ColorModeContext.Provider>
-    
   );
 };
 
