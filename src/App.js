@@ -10,6 +10,7 @@ import UploadVideo from "./pages/addVideo";
 import AddCamera from "./pages/addCamera";
 import Registration from "./pages/registration";
 import VideoHistory from "./pages/videoHistory";
+import LandingPage from "./pages/landingPage"
 
 const App = () => {
   const [theme, colorMode] = useMode();
@@ -94,6 +95,17 @@ const App = () => {
                     element={
                       isAuthenticated() ? (
                         <VideoHistory />
+                      ) : (
+                        <Navigate to="/" />
+                      )
+                    }
+                  />
+
+                  <Route
+                    path="/landing"
+                    element={
+                      isAuthenticated() ? (
+                        <LandingPage />
                       ) : (
                         <Navigate to="/" />
                       )

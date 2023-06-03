@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from "react";
-
-import {
-  Box,
-  Button,
-  Typography,
-  useTheme,
-  useMediaQuery,
-} from "@mui/material";
+import { Box, Button, Typography, useTheme, useMediaQuery } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { tokens } from "../../theme";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
@@ -22,10 +15,8 @@ const Dashboard = () => {
   const smScreen = useMediaQuery(theme.breakpoints.up("sm"));
   const colors = tokens(theme.palette.mode);
 
-
   const [userData, setUserData] = useState(null);
 
-  
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -71,28 +62,23 @@ const Dashboard = () => {
     return null;
   };
 
-
-
   return (
-    
     <Box m="20px">
       {/* HEADER */}
       {userData ? (
-              <>
-                <Typography variant="body1" color="textSecondary"> 
-                  Name: {userData.name}
-                </Typography>
-                <Typography variant="body1" color="textSecondary">
-                  Email: {userData.email}
-                </Typography>
-              </>
-            ) : (
-              
-            
-              <Typography variant="body1" color="textSecondary">
-                Loading user data...
-              </Typography>
-            )}
+        <>
+          <Typography variant="body1" color="textSecondary">
+            Name: {userData.name}
+          </Typography>
+          <Typography variant="body1" color="textSecondary">
+            Email: {userData.email}
+          </Typography>
+        </>
+      ) : (
+        <Typography variant="body1" color="textSecondary">
+          Loading user data...
+        </Typography>
+      )}
       <Box
         display={smScreen ? "flex" : "block"}
         flexDirection={smScreen ? "row" : "column"}
@@ -101,8 +87,7 @@ const Dashboard = () => {
         m="10px 0"
       >
         <Header title="DASHBOARD" subtitle="Welcome to your dashboard" />
- 
-        
+
         <Box>
           <Button
             sx={{
@@ -131,9 +116,7 @@ const Dashboard = () => {
           >
             <StatBox
               title="12,361"
-              subtitle="Re-Identify with Video Footage " 
-              progress="1.75"
-              increase="100%"
+              subtitle="Re-Identify with Video Footage"
               icon={
                 <VideoLibraryIcon
                   sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
@@ -153,8 +136,6 @@ const Dashboard = () => {
             <StatBox
               title="431,225"
               subtitle="Re-Identify with Live-Cameras"
-              progress="1.50"
-              increase="100%"
               icon={
                 <CameraAltIcon
                   sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
@@ -174,9 +155,6 @@ const Dashboard = () => {
             <StatBox
               title="32,441"
               subtitle="How Many Times You Re-identify persons"
-              progress="2.30"
-              increase="100%"
-
               icon={
                 <ScheduleIcon
                   sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
@@ -196,8 +174,6 @@ const Dashboard = () => {
             <StatBox
               title="1,325,134"
               subtitle="Accuracy Rate"
-              progress="2.80"
-              increase="100%"
               icon={
                 <AssessmentIcon
                   sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
