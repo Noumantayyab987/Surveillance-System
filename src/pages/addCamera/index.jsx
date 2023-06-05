@@ -15,7 +15,6 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { tokens } from "../../theme";
-import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
 import VideoLibraryOutlinedIcon from "@mui/icons-material/VideoLibraryOutlined";
 import ImageOutlinedIcon from "@mui/icons-material/ImageOutlined";
 import AssessmentOutlinedIcon from "@mui/icons-material/AssessmentOutlined";
@@ -24,20 +23,16 @@ import Header from "../../components/Header";
 import StatBox from "../../components/StatBox";
 import { Select, MenuItem } from "@mui/material";
 
-
-
 const Dashboard = () => {
   const theme = useTheme();
   const smScreen = useMediaQuery(theme.breakpoints.up("sm"));
   const colors = tokens(theme.palette.mode);
-  const [setUploadedImage] = useState(null);
+  const [uploadedImage, setUploadedImage] = useState(null);
   const [accuracyLevel, setAccuracyLevel] = useState("low");
   const [openCameraDialog, setOpenCameraDialog] = useState(false);
   const [cameras, setCameras] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
 
-
-  
-  
 
 
   const handleImageUpload = (event) => {
@@ -65,9 +60,36 @@ const Dashboard = () => {
     const ip = document.getElementById("ip-address").value;
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
-    const newCamera = { ip, username, password };
-    setCameras((prevCameras) => [...prevCameras, newCamera]);
-    setOpenCameraDialog(false);
+    
+    // Send API request to add the camera
+    const apiUrl = "https://34.133.165.142/live-camera-reid/add_camera";
+    const requestBody = JSON.stringify({ ip, username, password });
+
+    fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: requestBody,
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Camera authentication failed");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        // Camera added successfully
+        const newCamera = { ip, username, password };
+        setCameras((prevCameras) => [...prevCameras, newCamera]);
+        setOpenCameraDialog(false);
+      })
+      .catch((error) => {
+        console.error("Error adding camera:", error);
+        // Set the error message
+        setErrorMessage("Camera authentication failed");
+      });
   };
 
   const handleDeleteCamera = (index) => {
@@ -242,39 +264,33 @@ const Dashboard = () => {
         </Grid>
 
         <Grid item xs={12} sm={12} md={6} lg={4} xl={4}>
-          <Box
-            width="100%"
-            backgroundColor={colors.primary[400]}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-          >
-            {/* Additional Box */}
-            <Box
-              display="flex"
-              flexDirection="column"
-              alignItems="center"
-              justifyContent="center"
-              p={2}
-            >
-              <IconButton
-                sx={{
-                  backgroundColor: colors.blueAccent[700],
-                  color: colors.grey[100],
-                  fontSize: "26px",
-                }}
-              >
-                <DownloadOutlinedIcon />
-              </IconButton>
-              <Typography
-                variant="subtitle1"
-                sx={{ color: colors.grey[100], mt: 1 }}
-              >
-                Start Re-Identify
-              </Typography>
-            </Box>
-          </Box>
-        </Grid>
+  <Box
+    width="100%"
+    backgroundColor={colors.primary[400]}
+    display="flex"
+  >
+    {uploadedImage ? (
+      <Box>
+        <img src={URL.createObjectURL(uploadedImage)} alt="Uploaded" height={100}
+                    width={100} />
+        <IconButton
+          sx={{
+            backgroundColor: colors.blueAccent[700],
+            color: colors.grey[100],
+            fontSize: "26px",
+          }}
+          onClick={() => setUploadedImage(null)}
+        >
+          <DeleteOutlinedIcon />
+        </IconButton>
+      </Box>
+    ) : (
+      <label htmlFor="image-upload" style={{ cursor: "pointer" }}>
+        {/* ... */}
+      </label>
+    )}
+  </Box>
+</Grid>
       </Grid>
 
       {/* Camera Dialog */}
@@ -309,6 +325,8 @@ const Dashboard = () => {
               type="password"
             />
           </Box>
+          {errorMessage && <Typography variant="body1" sx={{ color: "red" }}>{errorMessage}</Typography>}
+
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseCameraDialog}>Cancel</Button>

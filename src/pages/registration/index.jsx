@@ -208,7 +208,7 @@ function Registration() {
 
   const registerUser = async (name, email, password) => {
     try {
-      const response = await fetch('https://34.27.112.52/user/', {
+      const response = await fetch('https://34.133.165.142/user/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -237,7 +237,7 @@ function Registration() {
 
   const loginUser = async (email, password) => {
     try {
-      const response = await fetch('https://34.27.112.52/login', {
+      const response = await fetch('https://34.133.165.142/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
