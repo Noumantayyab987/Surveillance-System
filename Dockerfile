@@ -1,5 +1,5 @@
 FROM node:18.16.0 as build
-WORKDIR /lit-clothing
+WORKDIR /src
 
 COPY package*.json .
 RUN npm install
