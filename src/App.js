@@ -1,6 +1,6 @@
 import { ColorModeContext, useMode } from "./theme";
 import { CssBaseline, ThemeProvider } from "@mui/material";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { MyProSidebarProvider } from "./pages/global/sidebar/sidebarContext";
 import { useEffect, useState } from "react";
 
@@ -23,6 +23,8 @@ import Home from "./pages/landingPage/Home";
 const App = () => {
   const [theme, colorMode] = useMode();
   const [accessToken, setAccessToken] = useState();
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     // Retrieve the access token from cookies
@@ -38,8 +40,24 @@ const App = () => {
 
   // Function to check if the user has access token
   const isAuthenticated = () => {
-    return !!accessToken;
+    if (!accessToken) return false;
+  
+    const tokenExpiration = 25 * 60 * 1000; // 25 minutes in milliseconds
+    const tokenExpirationDate = new Date().getTime() + tokenExpiration;
+    const currentTime = new Date().getTime();
+    const isTokenExpired = tokenExpirationDate < currentTime;
+  
+    if (isTokenExpired) {
+      // Delete the access token from cookies
+      document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      navigate("/"); // Redirect to the registration page
+      return false;
+    }
+  
+    return true;
   };
+  
+  
 
   return (
     <ColorModeContext.Provider value={colorMode}>

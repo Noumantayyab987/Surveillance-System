@@ -5,6 +5,7 @@ import {
   Typography,
   useTheme,
   useMediaQuery,
+  DialogContent,
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { tokens } from "../../theme";
@@ -25,15 +26,21 @@ const Dashboard = () => {
   const [reIdentifyInProgress, setReIdentifyInProgress] = useState(false);
   const [accuracyLevel, setAccuracyLevel] = useState("low");
   const [displayMessage, setDisplayMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [videoError, setVideoError] = useState(false);
+
+
 
   const handleVideoUpload = (e) => {
     const file = e.target.files[0];
     if (!file || !file.type.startsWith("video/")) {
-      alert("Please upload a valid video file");
+      setErrorMessage("Please upload a valid video file");
       return;
     }
+    setVideoError(false); // Reset videoError state
     setVideo(file);
   };
+  
 
   const handlePictureUpload = (e) => {
     const files = Array.from(e.target.files);
@@ -41,7 +48,7 @@ const Dashboard = () => {
       (file) => !file.type.startsWith("image/")
     );
     if (unsupportedFiles.length > 0) {
-      alert("Please upload valid image files");
+      setErrorMessage("Please upload valid image files");
       return;
     }
     const newPictures = [...pictures, ...files];
@@ -275,14 +282,14 @@ const Dashboard = () => {
               {video && (
                 <div className="picture-item">
                   <video
-                    src={URL.createObjectURL(video)}
-                    className="uploaded-image"
-                    height={100}
-                    width={100}
-                    onMouseEnter={(e) => e.target.play()}
-                    onMouseLeave={(e) => e.target.pause()}
-                    
-                  />
+  src={URL.createObjectURL(video)}
+  className="uploaded-image"
+  height={100}
+  width={100}
+  onMouseEnter={(e) => e.target.play()}
+  onMouseLeave={(e) => e.target.pause()}
+  onError={() => setVideoError(true)} // Handle video error
+/>
                   
                   {video && (
               <Box ml={1}>
@@ -306,6 +313,32 @@ const Dashboard = () => {
             </Box>
           </Box>
           {displayMessage && <p className="message">{displayMessage}</p>}
+          <DialogContent>
+  {/* Existing JSX content */}
+  {errorMessage && (
+    <Box
+      mt={2}
+      bgcolor="error.main"
+      color="error.contrastText"
+      p={2}
+      borderRadius={4}
+    >
+      {errorMessage}
+    </Box>
+  )}
+  {videoError && (
+  <Box
+    mt={2}
+    bgcolor="error.main"
+    color="error.contrastText"
+    p={2}
+    borderRadius={4}
+  >
+    Error playing the video. Please make sure it is a supported format.
+  </Box>
+)}
+
+</DialogContent>
           
         </Grid>
 
