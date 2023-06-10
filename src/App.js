@@ -12,6 +12,14 @@ import Registration from "./pages/registration";
 import VideoHistory from "./pages/videoHistory";
 import LandingPage from "./pages/landingPage"
 
+import Home from "./pages/landingPage/Home";
+// import About from "./pages/landingPage/About";
+// import Contact from "./pages/landingPage/Contact";
+
+// import Navbar from "./components/Navbar";
+// import Footer from "./components/Footer/Footer";
+
+
 const App = () => {
   const [theme, colorMode] = useMode();
   const [accessToken, setAccessToken] = useState();
@@ -38,9 +46,10 @@ const App = () => {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <Routes>
+        
           <Route
-            path="/registration"
-            element={<Registration />}
+            path="/home"
+            element={<Home />}
           />
           <Route
             path="/"
@@ -48,6 +57,11 @@ const App = () => {
               isAuthenticated() ? <Navigate to="/dashboard" /> : <Registration />
             }
           />
+          
+          {/* <Route path='/home' element={<Home />} />
+          <Route path='/about' element={<About />} />
+          <Route path='/contact' element={<Contact />} /> */}
+          
         </Routes>
         {isAuthenticated() && (
           <MyProSidebarProvider>
@@ -117,8 +131,11 @@ const App = () => {
           </MyProSidebarProvider>
         )}
       </ThemeProvider>
+      
     </ColorModeContext.Provider>
+    
   );
+  
 };
 
 export default App;

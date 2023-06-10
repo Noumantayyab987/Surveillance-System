@@ -27,16 +27,26 @@ const Dashboard = () => {
   const [displayMessage, setDisplayMessage] = useState("");
 
   const handleVideoUpload = (e) => {
-    setVideo(e.target.files[0]);
+    const file = e.target.files[0];
+    if (!file || !file.type.startsWith("video/")) {
+      alert("Please upload a valid video file");
+      return;
+    }
+    setVideo(file);
   };
 
   const handlePictureUpload = (e) => {
-    const newPictures = [...pictures];
-    for (let i = 0; i < e.target.files.length; i++) {
-      newPictures.push(e.target.files[i]);
+    const files = Array.from(e.target.files);
+    const unsupportedFiles = files.filter(
+      (file) => !file.type.startsWith("image/")
+    );
+    if (unsupportedFiles.length > 0) {
+      alert("Please upload valid image files");
+      return;
     }
+    const newPictures = [...pictures, ...files];
     setPictures(newPictures);
-    setSelectedImage(e.target.files[0]);
+    setSelectedImage(files[0]);
   };
 
   function getCookie(name) {
@@ -71,7 +81,7 @@ const Dashboard = () => {
     }
 
     try {
-      const apiUrl = `https://34.27.112.52/video-reid/upload?accuracy=${accuracyLevel}`;
+      const apiUrl = `https://34.133.165.142/video-reid/upload?accuracy=${accuracyLevel}`;
       const response = await fetch(apiUrl, {
         method: "POST",
         body: formData,
