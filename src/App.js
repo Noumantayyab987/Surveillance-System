@@ -10,9 +10,11 @@ import UploadVideo from "./pages/addVideo";
 import AddCamera from "./pages/addCamera";
 import Registration from "./pages/registration";
 import VideoHistory from "./pages/videoHistory";
-import LandingPage from "./pages/landingPage"
+import LandingPage from "./pages/landingPage";
 
 import Home from "./pages/landingPage/Home";
+
+import SyncCamerasPage from "./pages/syncCameras";
 // import About from "./pages/landingPage/About";
 // import Contact from "./pages/landingPage/Contact";
 
@@ -127,6 +129,16 @@ const App = () => {
                     element={
                       isAuthenticated() ? (
                         <VideoHistory />
+                      ) : (
+                        <Navigate to="/" />
+                      )
+                    }
+                  />
+                  <Route
+                    path="/sync-cameras"
+                    element={
+                      isAuthenticated() ? (
+                        <SyncCamerasPage />
                       ) : (
                         <Navigate to="/" />
                       )

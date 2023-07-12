@@ -266,6 +266,14 @@ const MyProSidebar = () => {
               setSelected={setSelected}
               
             />
+            <Item
+              title="Sync Cameras"
+              to="/sync-cameras"
+              icon={<ContactsOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+              
+            />
             
             <box>
               

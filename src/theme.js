@@ -114,7 +114,7 @@ export const tokens = (mode) => ({
           400: "#535ac8",
           500: "#6870fa",
           600: "#868dfb",
-          700: "#a4a9fc",
+          700: "#3e4396",
           800: "#c3c6fd",
           900: "#e1e2fe"
         }
@@ -144,7 +144,7 @@ export const themeSettings = (mode) => {
               light: colors.grey[100]
             },
             background: {
-              default: colors.primary[500]
+              default: colors.primary[600]
             }
           }
         : {
@@ -216,3 +216,5 @@ export const useMode = () => {
 
   return [theme, colorMode];
 };
+
+
