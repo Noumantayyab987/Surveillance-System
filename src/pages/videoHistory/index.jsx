@@ -34,7 +34,7 @@ const Dashboard = () => {
         const accessToken = getCookieValue("access_token");
         if (accessToken) {
           const response = await fetch(
-            "https://34.133.165.142/video-reid/history",
+            "http://34.170.11.146/video-reid/history",
             {
               headers: {
                 Authorization: `Bearer ${accessToken}`,
@@ -61,12 +61,12 @@ const Dashboard = () => {
 
   const handleVideoDownload = (videoToken) => {
     window.open(
-      `https://34.133.165.142/video-reid/download_video/${videoToken}`
+      `http://34.170.11.146/video-reid/download_video/${videoToken}`
     );
   };
 
   const handleImageDownload = (imageToken) => {
-    window.open(`https://34.133.165.142/video-reid/target-image/${imageToken}`);
+    window.open(`http://34.170.11.146/video-reid/target-image/${imageToken}`);
   };
 
   return (

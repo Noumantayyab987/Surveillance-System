@@ -1,195 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import styled, { keyframes } from 'styled-components';
-
-
-
-
-const glowAnimation = keyframes`
-  0% {
-    box-shadow: 0 0 5px rgba(74, 144, 226, 0.6), 0 0 20px rgba(74, 144, 226, 0.6);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(74, 144, 226, 0.6), 0 0 50px rgba(74, 144, 226, 0.6);
-  }
-  100% {
-    box-shadow: 0 0 5px rgba(74, 144, 226, 0.6), 0 0 20px rgba(74, 144, 226, 0.6);
-  }
-`;
-
-
-const Container = styled.div`
-  overflow: hidden;
-  background-image: url('https://www.hdwallpapers.in/thumbs/2021/plant_leaves_water_drops_dark_background_4k_hd_nature-t2.jpg');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background: #141b2d;
-
-  @keyframes dropletAnim {
-    0% {
-      transform: translateY(0) scale(1);
-      opacity: 0.8;
-    }
-    50% {
-      transform: translateY(10px) scale(1.2);
-      opacity: 0.4;
-    }
-    100% {
-      transform: translateY(20px) scale(1);
-      opacity: 0.8;
-    }
-  }
-`;
-
-const SignUpContainer = styled.div`
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  margin-bottom: 20px;
-  box-sizing: border-box;
-  padding: 20px;
-  backdrop-filter: blur(15px);
-  border-radius: 10px;
-  margin: 2% 2% 20px 2%;
-  background: rgba(74, 144, 226, 0);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-radius: 10px;
-  /* Add border animation */ 
-
-  background: #1F2A40;
-  color:#70d8bd;
-
-  position: relative;
-  &::before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    border: 2px solid transparent;
-    border-radius: 20px;
-    animation: ${glowAnimation} 2s linear infinite alternate;
-
-
-    
-  }
-`;
-const SignInContainer = styled.div`
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  margin-bottom: 20px;
-  box-sizing: border-box;
-  padding: 20px;
-  backdrop-filter: blur(15px);
-  border-radius: 10px;
-  margin: 2% 2% 20px 2%;
-  background: rgba(74, 144, 226, 0);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-radius: 10px;
-  background: #1F2A40;
-  color:#70d8bd;
-  /* Add border animation */
-  position: relative;
-  &::before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    border: 2px solid transparent;
-    border-radius: 10px;
-    animation: ${glowAnimation} 2s linear infinite alternate;
-  }
-`;
-
-
-const Title = styled.h2`
-font-size: 24px;
-margin-bottom: 20px;
-display: flex;
-justify-content: center;
-align-items: center;
-text-align: center;
-
-`;
-
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-`;
-
-const Input = styled.input`
-  font-size: 1.2rem;
-  margin-top: 1rem;
-  padding: 0.8rem 1.5rem;
-  border-radius: 0.4rem;
-  color: white;
-  transition: all 0.3s ease-in-out;
-  background: rgba(74, 144, 226, 0);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-radius: 10px;
-  border: 0.1px solid rgba(255, 255, 255, 0.18);
-  border-color: #1e88e5;
+import React, { useState } from 'react';
+import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
+import CssBaseline from '@mui/material/CssBaseline';
+import TextField from '@mui/material/TextField';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import Link from '@mui/material/Link';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import Typography from '@mui/material/Typography';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import styled, {  } from 'styled-components';
+import {
   
-  &:hover {
-    cursor: pointer;
-  color:#70d8bd;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
-  }
+  DialogContent,
+  DialogContentText,
   
-  &:focus {
-    outline: none;
-    border-color: #1e88e5; /* Add blue border color */
-    box-shadow: 0px 0px 3px 2px rgba(30, 136, 229, 0.6); /* Optional: Add a subtle box shadow */
-  }
-`;
+} from "@mui/material";
 
 
-const Button = styled.button`
-  font-size: 1.2rem;
-  padding: 0.3rem 0.5rem;
-  border: none;
-  border-radius: 0.4rem;
-  color: #ffff;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease-in-out;
-  background: rgba(74, 144, 226, 0);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  margin-top: 10%;
-  border: 2px solid rgba(255, 255, 255, 0.18);
-  background: rgb(20, 27, 45)   
-  color: #70d8bd;
 
-  &:hover {
-    cursor: pointer;
-    color: #70d8bd;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
-  }
-`;
+const backgroundImage = require('../../assets/CSS.png');
+
 
 const SuccessMessage = styled.p`
   color: green;
@@ -200,166 +34,268 @@ const ErrorMessage = styled.p`
 `;
 
 
-function Registration() {
-  const [isSignIn, setIsSignIn] = useState(false);
+function SignInSide() {
+  const [isLogin, setIsLogin] = React.useState(true);
+  const [email, setEmail] = React.useState('');
+  const [username, setUsername] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [emailError, setEmailError] = React.useState('');
+  const [passwordError, setPasswordError] = React.useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [usernameError, setUsernameError] = useState('');
+  const handleEmailChange = (event) => {
+    const newEmail = event.target.value;
+    setEmail(newEmail);
+    setEmailError(validateEmail(newEmail) ? '' : 'Invalid email format');
+  };
 
-  const registerUser = async (name, email, password) => {
-    try {
-      const response = await fetch('https://34.133.165.142/user/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, email, password }),
-      });
-      const data = await response.json();
-      console.log(data);
-      if (response.status === 201) {
-        setSuccessMessage('User created successfully!');
-        setErrorMessage('');
-        window.location.reload();
-      }else if (response.status === 406) {
-        setSuccessMessage('');
-        setErrorMessage('Email is invalid');
-      }else {
-        setSuccessMessage('');
-        setErrorMessage('User already exists!');
+  const handlePasswordChange = (event) => {
+    const newPassword = event.target.value;
+    setPassword(newPassword);
+    setPasswordError(validatePassword(newPassword) ? '' : 'Password must be at least 3 characters');
+  };
+
+  const handleUsernameChange = (event) => {
+    const newUsername = event.target.value;
+    setUsername(newUsername);
+    setUsernameError(validateUsername(newUsername) ? '' : 'Username must be at least 4 characters');
+  };
+
+  const handleSwitchMode = () => {
+    setIsLogin((prevMode) => !prevMode);
+    setEmail('');
+    setUsername('');
+    setPassword('');
+    setEmailError('');
+    setUsernameError('');
+    setPasswordError('');
+  };
+
+  
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    if (isLogin) {
+      // Login logic
+      if (validateEmail(email) && validatePassword(password)) {
+        try {
+          const response = await fetch('http://34.170.11.146/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              accept: 'application/json',
+            },
+            body: `grant_type=&username=${encodeURIComponent(email)}&password=${encodeURIComponent(
+              password
+            )}&scope=&client_id=&client_secret=`,
+          });
+          const data = await response.json();
+          console.log(data);
+
+          if (response.status === 200) {
+            document.cookie = `access_token=${data.access_token}; Secure`;
+            document.cookie = `token_type=${data.token_type}; Secure`;
+
+            // Redirect to the dashboard or desired page
+            window.location.href = 'http://localhost:3000/dashboard';
+          } else if (response.status === 404) {
+            // Show error message for invalid email or password
+            setErrorMessage('Invalid email or password.');
+          } else {
+            // Show generic error message for login failure
+            setErrorMessage('Error logging in!');
+          }
+        } catch (error) {
+          console.error(error);
+          // Show generic error message for login failure
+          setErrorMessage('Error logging in!');
+        }
       }
-    } catch (error) {
-      console.error(error);
-      setSuccessMessage('');
-      setErrorMessage('Error creating user!');
+    } else {
+      // Registration logic
+      if (validateEmail(email) && validatePassword(password) && validateUsername(username)) {
+        try {
+          const response = await fetch('http://34.170.11.146/user/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name: username, email, password }),
+
+          });
+          const data = await response.json();
+          console.log(data);
+
+          if (response.status === 201) {
+            // Show success message for user registration
+            setSuccessMessage('User created successfully!');
+            setErrorMessage('');
+            // Reload the page or perform any other desired action
+            window.location.reload();
+          } else if (response.status === 406) {
+            // Show error message for invalid email
+            setErrorMessage('Email is invalid');
+          } else {
+            // Show error message for user already exists
+            setErrorMessage('User already exists!');
+          }
+        } catch (error) {
+          console.error(error);
+          // Show generic error message for user registration failure
+          setErrorMessage('Error creating user!');
+        }
+      }
     }
   };
 
-  const loginUser = async (email, password) => {
-    try {
-      const response = await fetch('https://34.133.165.142/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          accept: 'application/json',
-        },
-        body: `grant_type=&username=${encodeURIComponent(
-          email
-        )}&password=${encodeURIComponent(password)}&scope=&client_id=&client_secret=`,
-      });
-      const data = await response.json();
-      console.log(data);
-      if (response.status === 200) {
-        document.cookie = `access_token=${data.access_token}; Secure`;
-        document.cookie = `token_type=${data.token_type}; Secure`;
-
-        setSuccessMessage('Successfully logged in!');
-        setErrorMessage('');
-
-        setIsLoggedIn(true); // Set login status to true
-
-        window.location.href = 'https://xwzn2c-3000.csb.app/dashboard';
-      } else if (response.status === 404) {
-        setSuccessMessage('');
-        setErrorMessage('Invalid email or password.');
-      } else {
-        setSuccessMessage('');
-        setErrorMessage('Error logging in!');
-      }
-    } catch (error) {
-      console.error(error);
-      setSuccessMessage('');
-      setErrorMessage('Error logging in!');
-    }
+  const validateEmail = (email) => {
+    // Basic email format validation using regular expression
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   };
 
-  const handleRegistration = (event) => {
-    event.preventDefault();
-    const name = event.target.elements.name.value;
-    const email = event.target.elements.email.value;
-    const password = event.target.elements.password.value;
-    registerUser(name, email, password);
+  const validatePassword = (password) => {
+    // Minimum 6 characters validation
+    return password.length >= 3;
   };
 
-  const handleLogin = (event) => {
-    event.preventDefault();
-    const email = event.target.elements.email.value;
-    const password = event.target.elements.password.value;
-    loginUser(email, password);
+  const validateUsername = (username) => {
+    // Minimum 4 characters validation
+    return username.length >= 4;
   };
 
-  const toggleSignIn = () => {
-    setIsSignIn(!isSignIn);
-  };
-
- 
-
-  useEffect(() => {
-    const handleLogout = () => {
-      if (isLoggedIn) {
-        logout();
-      }
-    };
-
-    
-
-    const logout = () => {
-      document.cookie = 'access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-      document.cookie = 'token_type=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-  
-      setIsLoggedIn(false); // Set login status to false
-  
-      window.location.href = 'https://gregarious-pothos-f687f0.netlify.app/';
-    };
-  
-    window.addEventListener('beforeunload', handleLogout);
-  
-    return () => {
-      window.removeEventListener('beforeunload', handleLogout);
-    };
-  }, [isLoggedIn]);
+  const defaultTheme = createTheme();
 
   return (
-    <Container>
-      {isSignIn ? (
-        <SignInContainer>
+    <ThemeProvider theme={defaultTheme}>
+      <Grid container component="main" sx={{ height: '100vh' }}>
+        <CssBaseline />
+        <Grid
+          item
+          xs={false}
+          sm={4}
+          md={7}
+          sx={{
+            backgroundImage: `url(${backgroundImage})`, // Use the imported image as the background image
+            backgroundRepeat: 'no-repeat',
+            backgroundColor: (t) =>
+              t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        />
+        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+          <Box
+            sx={{
+              my: 8,
+              mx: 4,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
+            <Avatar sx={{ m: 1, bgcolor: '#F25041' }}>
+              <LockOutlinedIcon />
+            </Avatar>
+            <Typography component="h1" variant="h5">
+              {isLogin ? 'Sign In' : 'Sign Up'}
+            </Typography>
+            {errorMessage && (
+                <DialogContent>
+                  <DialogContentText color="error">{successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}</DialogContentText>
+                  <DialogContentText color="error">{errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}</DialogContentText>
+                </DialogContent>
+              )}
 
-        <Form onSubmit={handleLogin}>
-          <Title>Sign In</Title>
-          {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
-            {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
-          <Input type="email" name="email" placeholder="Email" required />
-          <Input type="password" name="password" placeholder="Password" required />
-          <Button type="submit">Sign In</Button>
-          <p>
-            Don't have an account?{' '}
-            <Button type="button" onClick={toggleSignIn}>
-              Sign Up
-            </Button>
-          </p>
-        </Form>
-        </SignInContainer>
-      ) : (
-        <SignUpContainer>
-          <Form onSubmit={handleRegistration}>
-            <Title>Sign Up</Title>
-            {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
-            {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
-            <Input type="text" name="name" placeholder="Name" required />
-            <Input type="email" name="email" placeholder="Email" required />
-            <Input type="password" name="password" placeholder="Password" required />
-            <Button type="submit">Sign Up</Button>
-            <p>
-              Already have an account?{' '}
-              <Button type="button" onClick={toggleSignIn}>
-                Sign In
+            
+            
+            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+            {!isLogin && (
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="username"
+                  label="Username"
+                  name="username"
+                  autoComplete="username"
+                  autoFocus={isLogin}
+                  value={username}
+                  onChange={handleUsernameChange}
+                  onBlur={handleUsernameChange}
+                  error={usernameError !== ''}
+                  helperText={usernameError}
+                />
+              )}
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="email"
+                label="Email Address"
+                name="email"
+                autoComplete="email"
+                autoFocus={!isLogin}
+                value={email}
+                onChange={handleEmailChange}
+                onBlur={handleEmailChange}
+                error={emailError !== ''}
+                helperText={emailError}
+              />
+              
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={handlePasswordChange}
+                onBlur={handlePasswordChange}
+                error={passwordError !== ''}
+                helperText={passwordError}
+              />
+              <FormControlLabel
+                control={<Checkbox value="remember" color="primary" />}
+                label="Remember me"
+              />
+              <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2, backgroundColor: '#F25041' }}>
+                {isLogin ? 'Sign In' : 'Sign Up'}
               </Button>
-            </p>
-          </Form>
-        </SignUpContainer>
-      )}
-    </Container>
+              <Grid container>
+                <Grid item xs>
+                  <Link href="#" variant="body2" 
+                  sx={{
+                    color: '#F25041',
+                    
+                  }} >
+                    Forgot password?
+                  </Link>
+                </Grid>
+                <Grid item>
+                  <Link href="#" variant="body2"
+                  sx={{
+                    color: '#F25041',
+                    '&:hover': {
+                      color: '#F25041', // Change the hover color if desired
+                    },
+                  }}
+                  onClick={handleSwitchMode}>
+                    {isLogin ? "Don't have an account? Sign Up" : 'Already have an account? Login'}
+                  </Link>
+                </Grid>
+              </Grid>
+            </Box>
+          </Box>
+        </Grid>
+      </Grid>
+    </ThemeProvider>
   );
 }
 
-export default Registration;
+export default SignInSide;

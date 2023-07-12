@@ -118,7 +118,9 @@ export const tokens = (mode) => ({
           800: "#c3c6fd",
           900: "#e1e2fe"
         }
+        
       })
+      
 });
 
 // mui theme settings
@@ -193,6 +195,7 @@ export const themeSettings = (mode) => {
     }
   };
 };
+
 
 // context for color mode
 export const ColorModeContext = createContext({

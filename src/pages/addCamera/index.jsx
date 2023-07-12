@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -17,7 +17,6 @@ import Grid from "@mui/material/Unstable_Grid2";
 import { tokens } from "../../theme";
 import VideoLibraryOutlinedIcon from "@mui/icons-material/VideoLibraryOutlined";
 import ImageOutlinedIcon from "@mui/icons-material/ImageOutlined";
-import AssessmentOutlinedIcon from "@mui/icons-material/AssessmentOutlined";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import Header from "../../components/Header";
 import StatBox from "../../components/StatBox";
@@ -28,21 +27,16 @@ const Dashboard = () => {
   const smScreen = useMediaQuery(theme.breakpoints.up("sm"));
   const colors = tokens(theme.palette.mode);
   const [uploadedImage, setUploadedImage] = useState(null);
-  const [accuracyLevel, setAccuracyLevel] = useState("low");
   const [openCameraDialog, setOpenCameraDialog] = useState(false);
   const [cameras, setCameras] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
-
-
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     setUploadedImage(file);
   };
 
-  const handleAccuracyLevelChange = (event) => {
-    setAccuracyLevel(event.target.value);
-  };
+ 
 
   const handleStartReidentify = () => {
     // Add your logic for starting the re-identification process
@@ -55,14 +49,22 @@ const Dashboard = () => {
   const handleCloseCameraDialog = () => {
     setOpenCameraDialog(false);
   };
+  function getCookie(name) {
+    const cookieValue = document.cookie.match(
+      "(^|;)\\s*" + name + "\\s*=\\s*([^;]+)"
+    );
+    return cookieValue ? cookieValue.pop() : "";
+  }
+
+
 
   const handleSaveCamera = () => {
     const ip = document.getElementById("ip-address").value;
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
-    
+
     // Send API request to add the camera
-    const apiUrl = "https://34.133.165.142/live-camera-reid/add_camera";
+    const apiUrl = "http://34.170.11.146/live-camera-reid/add_camera";
     const requestBody = JSON.stringify({ ip, username, password });
 
     fetch(apiUrl, {
@@ -75,7 +77,7 @@ const Dashboard = () => {
     })
       .then((response) => {
         if (!response.ok) {
-          throw new Error("Camera authentication failed");
+          throw new Error("The camera is not Online");
         }
         return response.json();
       })
@@ -88,13 +90,46 @@ const Dashboard = () => {
       .catch((error) => {
         console.error("Error adding camera:", error);
         // Set the error message
-        setErrorMessage("Camera authentication failed");
+        setErrorMessage("The camera is not Online");
       });
   };
 
   const handleDeleteCamera = (index) => {
     setCameras((prevCameras) => prevCameras.filter((_, i) => i !== index));
   };
+
+
+  
+  useEffect(() => {
+
+    // Fetch the list of cameras when the component mounts
+    const fetchCameras = async () => {
+      try {
+        const apiUrl = "http://34.170.11.146/live-camera-reid/list_cameras";
+        const authToken = getCookie("access_token"); // Retrieve access token from cookies
+
+        const response = await fetch(apiUrl, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+            Accept: "application/json",
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setCameras(data.cameras);
+        } else {
+          console.error("Failed to fetch camera list:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching camera list:", error);
+      }
+    };
+
+    fetchCameras();
+  }, []);
+
+
 
   return (
     <Box m="20px">
@@ -122,6 +157,8 @@ const Dashboard = () => {
           </Button>
         </Box>
       </Box>
+
+      
 
       {/* GRID & CHARTS */}
       <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
@@ -170,6 +207,8 @@ const Dashboard = () => {
           </Grid>
         ))}
 
+        
+      
         <Grid item xs={12} sm={12} md={6} lg={4} xl={4}>
           <Box
             width="100%"
@@ -206,6 +245,42 @@ const Dashboard = () => {
           </Box>
         </Grid>
 
+        {/* Camera Dropdown */}
+        <Grid item xs={12} sm={12} md={6} lg={4} xl={4}>
+          <Box
+            width="100%"
+            backgroundColor={colors.primary[400]}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              justifyContent="center"
+              p={2}
+            >
+              <Typography variant="h6" sx={{ color: colors.grey[100] }}>
+                Camera List
+              </Typography>
+              <Select
+                value="" // Add the selected camera state here
+                onChange={() => {}} // Add the camera selection handler here
+                style={{ color: colors.grey[100], mt: 1 }}
+              >
+                {cameras.map((camera, index) => (
+                  <MenuItem key={index} value={camera.ip}>
+                    {`Camera ${index + 1}`}
+                  </MenuItem>
+                ))}
+              </Select>
+            </Box>
+          </Box>
+        </Grid>
+
+        {/* ... */}
+
         <Grid item xs={12} sm={12} md={6} lg={4} xl={4}>
           <Box
             width="100%"
@@ -234,34 +309,7 @@ const Dashboard = () => {
           </Box>
         </Grid>
 
-        <Grid item xs={12} sm={12} md={6} lg={4} xl={4}>
-          <Box
-            width="100%"
-            backgroundColor={colors.primary[400]}
-            display="flex"
-           
-          >
-            
-            <StatBox
-              title="Accuracy Level"
-              subtitle="Set Re-Identification Accuracy"
-              icon={
-                <AssessmentOutlinedIcon
-                  sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
-                />
-              }
-            />
-            <Select
-              value={accuracyLevel}
-              onChange={handleAccuracyLevelChange}
-              style={{ color: colors.grey[100] }}
-            >
-              <MenuItem value="low">Low</MenuItem>
-              <MenuItem value="medium">Medium</MenuItem>
-              <MenuItem value="high">High</MenuItem>
-            </Select>
-          </Box>
-        </Grid>
+        
 
         <Grid item xs={12} sm={12} md={6} lg={4} xl={4}>
   <Box

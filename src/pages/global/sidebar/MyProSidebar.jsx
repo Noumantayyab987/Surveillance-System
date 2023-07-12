@@ -27,7 +27,7 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
       try {
         const accessToken = getCookieValue("access_token");
         if (accessToken) {
-          const response = await fetch("https://34.133.165.142/user/me", {
+          const response = await fetch("http://34.170.11.146/user/me", {
             headers: {
               Authorization: `Bearer ${accessToken}`,
               accept: "application/json",
@@ -96,7 +96,7 @@ const MyProSidebar = () => {
       try {
         const accessToken = getCookieValue("access_token");
         if (accessToken) {
-          const response = await fetch("https://34.133.165.142/user/me", {
+          const response = await fetch("http://34.170.11.146/user/me", {
             headers: {
               Authorization: `Bearer ${accessToken}`,
               accept: "application/json",
@@ -200,7 +200,7 @@ const MyProSidebar = () => {
                 ml="15px"
               >
                 <Typography variant="h3" color={colors.grey[100]}>
-                  ADMIN
+                  USER
                 </Typography>
                 <IconButton
                   onClick={
@@ -214,25 +214,7 @@ const MyProSidebar = () => {
           </MenuItem>
           {userData && (
   <Box mb="25px">
-    <Box
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      sx={{
-        "& .avater-image": {
-          backgroundColor: colors.primary[500],
-        },
-      }}
-    >
-      <img
-        className="avater-image"
-        alt="profile user"
-        width="100px"
-        height="100px"
-        src={"../../assets/user.png"}
-        style={{ cursor: "pointer", borderRadius: "50%" }}
-      />
-    </Box>
+    
     <Box textAlign="center">
     <Typography
                   variant="h3"
