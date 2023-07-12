@@ -158,7 +158,7 @@ function SignInSide() {
 
   const validatePassword = (password) => {
     // Minimum 6 characters validation
-    return password.length >= 8;
+    return password.length >= 3;
   };
 
   const validateUsername = (username) => {

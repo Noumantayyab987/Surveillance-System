@@ -16,7 +16,6 @@ import { tokens } from "../../theme";
 import VideoLibraryOutlinedIcon from "@mui/icons-material/VideoLibraryOutlined";
 import Header from "../../components/Header";
 import StatBox from "../../components/StatBox";
-import InputLabel from "@mui/material/InputLabel";
 
 const PersonReidentificationPage = () => {
   // State variables
@@ -59,7 +58,6 @@ const PersonReidentificationPage = () => {
         }
       );
       if (response.status === 200) {
-        const data = await response.json();
         // Handle success response
         setOpenDialog(false);
         setNewCamera({
@@ -120,11 +118,11 @@ const PersonReidentificationPage = () => {
         setErrorMessage("Please select a camera and upload a target image.");
         return;
       }
-
+  
       // Prepare form data
       const formData = new FormData();
       formData.append("target_image", targetImage);
-
+  
       const response = await fetch(
         `http://34.170.11.146/live-camera-reid/upload-target-image?camera_ip=${selectedCamera}`,
         {
@@ -136,17 +134,17 @@ const PersonReidentificationPage = () => {
           body: formData,
         }
       );
-      const data = await response.json();
-      setDisplayMessage(
-        `Person re-identification in progress.`
-      );
-
-      // Handle success or error response
+  
+      // Open camera_stream_test.html in a new window/tab
+      const streamUrl = `camera_stream_test.html?selectedCameraIp=${selectedCamera}`;
+      window.open(streamUrl, "_blank");
+  
+      setDisplayMessage(`Person re-identification in progress.`);
     } catch (error) {
       console.error(error);
     }
   };
-
+  
   // Function to get cookie value
   function getCookie(name) {
     const cookieValue = document.cookie.match(
