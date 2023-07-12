@@ -267,7 +267,7 @@ const MyProSidebar = () => {
               
             />
             <Item
-              title="Sync Cameras"
+              title="Sync Network"
               to="/sync-cameras"
               icon={<ContactsOutlinedIcon />}
               selected={selected}

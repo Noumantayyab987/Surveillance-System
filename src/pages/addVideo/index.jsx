@@ -99,7 +99,7 @@ const Dashboard = () => {
       });
       const data = await response.json();
       setDisplayMessage(
-        `Your task is being processed. Your task is in queue. After completion, the video will be sent to your Email address. Queue Number: ${data.queue_number}, Email: ${data.email}`
+        `${data.Message},${data.email}`
       );
 
       setReIdentifyInProgress(false);

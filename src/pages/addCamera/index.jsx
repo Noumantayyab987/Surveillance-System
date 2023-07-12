@@ -138,7 +138,7 @@ const PersonReidentificationPage = () => {
       );
       const data = await response.json();
       setDisplayMessage(
-        `Person re-identification in progress. Please wait... Queue Number: ${data.queue_number}, Email: ${data.email}`
+        `Person re-identification in progress.`
       );
 
       // Handle success or error response
@@ -179,6 +179,7 @@ const PersonReidentificationPage = () => {
               fontWeight: "bold",
               padding: "10px 20px",
             }}
+            onClick={handleSubmit}
           >
             Start Re-Identify
           </Button>
@@ -281,8 +282,8 @@ const PersonReidentificationPage = () => {
         <p style={{ color: "red" }}>{errorMessage}</p>
       )}
 
-      {/* Submit button */}
-      <Button onClick={handleSubmit}>Re-Identify Person</Button>
+      {/* Submit button
+      <Button onClick={handleSubmit}>Re-Identify Person</Button> */}
 
       {/* Dialog for adding camera */}
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
@@ -309,7 +310,13 @@ const PersonReidentificationPage = () => {
               setNewCamera({ ...newCamera, password: e.target.value })
             }
           />
+
           <Button onClick={handleSaveCamera}>Save</Button>
+          {/* Display messages or errors */}
+      {displayMessage && <p>{displayMessage}</p>}
+      {errorMessage && (
+        <p style={{ color: "red" }}>{errorMessage}</p>
+      )}
         </DialogContent>
       </Dialog>
     </Box>

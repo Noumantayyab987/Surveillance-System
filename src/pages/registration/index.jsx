@@ -53,7 +53,7 @@ function SignInSide() {
   const handlePasswordChange = (event) => {
     const newPassword = event.target.value;
     setPassword(newPassword);
-    setPasswordError(validatePassword(newPassword) ? '' : 'Password must be at least 3 characters');
+    setPasswordError(validatePassword(newPassword) ? '' : 'Password must be at least 8 characters');
   };
 
   const handleUsernameChange = (event) => {
@@ -158,7 +158,7 @@ function SignInSide() {
 
   const validatePassword = (password) => {
     // Minimum 6 characters validation
-    return password.length >= 3;
+    return password.length >= 8;
   };
 
   const validateUsername = (username) => {

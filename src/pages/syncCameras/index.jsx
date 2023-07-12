@@ -16,46 +16,82 @@ import { tokens } from "../../theme";
 import VideoLibraryOutlinedIcon from "@mui/icons-material/VideoLibraryOutlined";
 import Header from "../../components/Header";
 import StatBox from "../../components/StatBox";
-import InputLabel from '@mui/material/InputLabel';
-
+import InputLabel from "@mui/material/InputLabel";
 
 const SyncCamerasPage = () => {
   // State variables
-  const [networkOptions, setNetworkOptions] = useState([
-    {
-      network_ip: "192.168.100.1",
-      network_username: "admin",
-      network_password: "admin",
-    },
-    {
-      network_ip: "192.168.200.1",
-      network_username: "admin",
-      network_password: "admin",
-    },
-  ]);
+  const [networkOptions, setNetworkOptions] = useState([]);
   const [selectedNetwork, setSelectedNetwork] = useState("");
-  const [cameras, setCameras] = useState(() => {
-    return [
-      { camera_id: "Camera 1", network_ip: "192.168.100.1" },
-      { camera_id: "Camera 2", network_ip: "192.168.100.1" },
-    ];
-  });
-  
-  
+  const [cameras, setCameras] = useState([]);
   const [targetImage, setTargetImage] = useState(null);
   const [displayMessage, setDisplayMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
-
-  const smScreen = useMediaQuery(theme.breakpoints.up("sm"));
-
   const [newNetwork, setNewNetwork] = useState({
     network_ip: "",
     network_username: "",
     network_password: "",
   });
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
+  const smScreen = useMediaQuery(theme.breakpoints.up("sm"));
+
+  // Fetch networks and cameras
+  // Fetch networks and cameras
+// Fetch networks and cameras
+const fetchNetworksAndCameras = async () => {
+  // Function to get cookie value
+  function getCookie(name) {
+    const cookieValue = document.cookie.match(
+      "(^|;)\\s*" + name + "\\s*=\\s*([^;]+)"
+    );
+    return cookieValue ? cookieValue.pop() : "";
+  }
+
+  try {
+    const networkResponse = await fetch(
+      "http://34.170.11.146/sync-camera-network/list-network",
+      {
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${getCookie("access_token")}`,
+        },
+      }
+    );
+    if (networkResponse.status === 200) {
+      const networkData = await networkResponse.json();
+      setNetworkOptions(networkData.Networks);
+    } else {
+      setErrorMessage("Error fetching network list. Please try again.");
+    }
+
+    let cameraData = [];
+    if (selectedNetwork) {
+      const cameraResponse = await fetch(
+        `http://34.170.11.146/sync-camera-network/list-camera?network_ip=${selectedNetwork}`,
+        {
+          headers: {
+            accept: "application/json",
+            Authorization: `Bearer ${getCookie("access_token")}`,
+          },
+        }
+      );
+      if (cameraResponse.status === 200) {
+        cameraData = await cameraResponse.json();
+      } else {
+        setErrorMessage("Error fetching camera list. Please try again.");
+      }
+    }
+    setCameras(cameraData);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+  // Call fetchNetworksAndCameras on component mount
+  useEffect(() => {
+    fetchNetworksAndCameras();
+  }, []);
 
   // Add network option
   const handleAddNetwork = () => {
@@ -63,8 +99,7 @@ const SyncCamerasPage = () => {
   };
 
   // Save new network details
-  // Save new network details
-const handleSaveNetwork = async () => {
+  const handleSaveNetwork = async () => {
     try {
       const response = await fetch(
         "http://34.170.11.146/sync-camera-network/add-Network",
@@ -79,7 +114,9 @@ const handleSaveNetwork = async () => {
         }
       );
       if (response.status === 422) {
-        setErrorMessage("Network is not online. Please check the network and try again.");
+        setErrorMessage(
+          "Network is not online. Please check the network and try again."
+        );
       } else {
         const data = await response.json();
         // Handle success response
@@ -89,12 +126,14 @@ const handleSaveNetwork = async () => {
           network_username: "",
           network_password: "",
         });
+        fetchNetworksAndCameras(); // Fetch updated network list
+        console.log("Network added successfully!");
       }
     } catch (error) {
       console.error(error);
     }
   };
-  
+
   // Delete network option
   const handleDeleteNetwork = async (networkIp) => {
     try {
@@ -108,43 +147,20 @@ const handleSaveNetwork = async () => {
           },
         }
       );
-      const data = await response.json();
-      // Handle success or error response
+      if (response.status === 200) {
+        const data = await response.json();
+        // Fetch updated network list
+        fetchNetworksAndCameras();
+        console.log("Network deleted successfully!");
+      } else {
+        setErrorMessage("Error deleting network. Please try again.");
+      }
     } catch (error) {
       console.error(error);
     }
   };
 
-  // Fetch cameras for selected network
-  // Fetch cameras for selected network
-  const fetchCameras = async () => {
-    try {
-      let data = [];
-      if (selectedNetwork) {
-        const response = await fetch(
-          `http://34.170.11.146/sync-camera-network/list-camera?network_ip=${selectedNetwork}`,
-          {
-            headers: {
-              accept: "application/json",
-              Authorization: `Bearer ${getCookie("access_token")}`,
-            },
-          }
-        );
-        const responseData = await response.json();
-        if (Array.isArray(responseData)) {
-          data = responseData;
-        }
-      }
-      setCameras(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  
-  // Call fetchCameras whenever selectedNetwork changes
-  useEffect(() => {
-    fetchCameras();
-  }, [selectedNetwork]);  // Handle target image upload
+  // Handle target image upload
   const handleTargetImageUpload = (event) => {
     const file = event.target.files[0];
     setTargetImage(file);
@@ -193,6 +209,11 @@ const handleSaveNetwork = async () => {
     );
     return cookieValue ? cookieValue.pop() : "";
   }
+
+  // Fetch cameras whenever selectedNetwork changes
+  useEffect(() => {
+    fetchNetworksAndCameras();
+  }, [selectedNetwork]);
 
   return (
     <Box m="20px">
@@ -244,65 +265,73 @@ const handleSaveNetwork = async () => {
           </Box>
         </Grid>
 
-        {/*Second Box: List of Networks*/}
-<Grid item xs={12} sm={12} md={6} lg={4} xl={4}>
-  <Box width="100%" backgroundColor={colors.primary[400]} display="flex">
-    <Box flexGrow={1}>
-      <Typography variant="h6">List of Networks</Typography>
-      {/* Display list of networks */}
-      <Select
-        value={selectedNetwork}
-        onChange={(e) => setSelectedNetwork(e.target.value)}
-      >
-        {networkOptions.map((network) => (
-          <MenuItem key={network.network_ip} value={network.network_ip}>
-            {network.network_ip}
-          </MenuItem>
-        ))}
-      </Select>
-    </Box>
-    {selectedNetwork && (
-      <Button
-        variant="contained"
-        color="error"
-        onClick={() => handleDeleteNetwork(selectedNetwork)}
-      >
-        Delete Network
-      </Button>
-    )}
-  </Box>
-</Grid>
-
+        {/* Second Box: List of Networks */}
+        <Grid item xs={12} sm={12} md={6} lg={4} xl={4}>
+          <Box
+            width="100%"
+            backgroundColor={colors.primary[400]}
+            display="flex"
+          >
+            <Box flexGrow={1}>
+              <Typography variant="h6">List of Networks</Typography>
+              {/* Display list of networks */}
+              <Select
+                value={selectedNetwork}
+                onChange={(e) => setSelectedNetwork(e.target.value)}
+              >
+                {networkOptions.map((network) => (
+                  <MenuItem
+                    key={network.network_ip}
+                    value={network.network_ip}
+                  >
+                    {network.network_ip}
+                  </MenuItem>
+                ))}
+              </Select>
+            </Box>
+            {selectedNetwork && (
+              <Button
+                variant="contained"
+                color="error"
+                onClick={() => handleDeleteNetwork(selectedNetwork)}
+              >
+                Delete Network
+              </Button>
+            )}
+          </Box>
+        </Grid>
 
         {/* Third Box: List of Cameras */}
-   
-
-<Grid item xs={12} sm={12} md={6} lg={4} xl={4}>
-  <Box width="100%" backgroundColor={colors.primary[400]} display="flex">
-    <Box flexGrow={1}>
-      <InputLabel id="cameras-select-label">List of Cameras</InputLabel> {/* Add InputLabel */}
-      {/* Display list of cameras */}
-      <Select
-        displayEmpty
-        value=""
-        disabled
-        labelId="cameras-select-label"
-      >
-        <MenuItem value="" disabled>
-          Select a camera
-        </MenuItem>
-        {cameras.map((camera) => (
-          <MenuItem key={camera.camera_id} value={camera.camera_id}>
-            {camera.camera_id}
-          </MenuItem>
-        ))}
-      </Select>
-    </Box>
-  </Box>
-</Grid>
-
-
-
+        <Grid item xs={12} sm={12} md={6} lg={4} xl={4}>
+          <Box
+            width="100%"
+            backgroundColor={colors.primary[400]}
+            display="flex"
+          >
+            <Box flexGrow={1}>
+              <InputLabel id="cameras-select-label">List of Cameras</InputLabel>
+              {/* Display list of cameras */}
+              <Select
+                displayEmpty
+                value=""
+                disabled
+                labelId="cameras-select-label"
+              >
+                <MenuItem value="" disabled>
+                  Select a camera
+                </MenuItem>
+                {cameras.map((camera) => (
+                  <MenuItem
+                    key={camera.camera_id}
+                    value={camera.camera_id}
+                  >
+                    {camera.camera_id}
+                  </MenuItem>
+                ))}
+              </Select>
+            </Box>
+          </Box>
+        </Grid>
 
         {/* Fourth Box: Upload Target Image */}
         <Grid item xs={12} sm={12} md={6} lg={4} xl={4}>
@@ -361,14 +390,20 @@ const handleSaveNetwork = async () => {
             label="Network Username"
             value={newNetwork.network_username}
             onChange={(e) =>
-              setNewNetwork({ ...newNetwork, network_username: e.target.value })
+              setNewNetwork({
+                ...newNetwork,
+                network_username: e.target.value,
+              })
             }
           />
           <TextField
             label="Network Password"
             value={newNetwork.network_password}
             onChange={(e) =>
-              setNewNetwork({ ...newNetwork, network_password: e.target.value })
+              setNewNetwork({
+                ...newNetwork,
+                network_password: e.target.value,
+              })
             }
           />
           <Button onClick={handleSaveNetwork}>Save</Button>
