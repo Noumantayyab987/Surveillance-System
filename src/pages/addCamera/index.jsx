@@ -1,316 +1,319 @@
-// import React, { useState, useEffect } from "react";
-// import {
-//   Box,
-//   Button,
-//   IconButton,
-//   Typography,
-//   useTheme,
-//   useMediaQuery,
-//   Dialog,
-//   DialogTitle,
-//   DialogContent,
-//   DialogContentText,
-//   DialogActions,
-//   TextField,
-//   Select,
-//   MenuItem,
-// } from "@mui/material";
-// import Grid from "@mui/material/Unstable_Grid2";
-// import { tokens } from "../../theme";
-// import VideoLibraryOutlinedIcon from "@mui/icons-material/VideoLibraryOutlined";
-// import ImageOutlinedIcon from "@mui/icons-material/ImageOutlined";
-// import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
-// import Header from "../../components/Header";
-// import StatBox from "../../components/StatBox";
-// import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import {
+  Box,
+  Typography,
+  Button,
+  Select,
+  MenuItem,
+  DialogContent,
+  useTheme,
+  Dialog,
+  TextField,
+  useMediaQuery,
+} from "@mui/material";
+import Grid from "@mui/material/Unstable_Grid2";
+import { tokens } from "../../theme";
+import VideoLibraryOutlinedIcon from "@mui/icons-material/VideoLibraryOutlined";
+import Header from "../../components/Header";
+import StatBox from "../../components/StatBox";
+import InputLabel from "@mui/material/InputLabel";
 
-// function getBearerTokenFromCookies() {
-//   const cookies = document.cookie.split(";");
+const PersonReidentificationPage = () => {
+  // State variables
+  const [cameraOptions, setCameraOptions] = useState([
+    { ip: "Camera 1" },
+    { ip: "Camera 2" },
+  ]);
+  const [selectedCamera, setSelectedCamera] = useState("");
+  const [targetImage, setTargetImage] = useState(null);
+  const [displayMessage, setDisplayMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [openDialog, setOpenDialog] = useState(false);
+  const [newCamera, setNewCamera] = useState({
+    ip: "",
+    username: "",
+    password: "",
+  });
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
+  const smScreen = useMediaQuery(theme.breakpoints.up("sm"));
 
-//   for (let i = 0; i < cookies.length; i++) {
-//     const cookie = cookies[i].trim();
+  // Add camera option
+  const handleAddCamera = () => {
+    setOpenDialog(true);
+  };
 
-//     if (cookie.startsWith("access_token=")) {
-//       const token = cookie.substring("access_token=".length);
-//       return token;
-//     }
-//   }
+  // Save new camera details
+  const handleSaveCamera = async () => {
+    try {
+      const response = await fetch(
+        "http://34.170.11.146/live-camera-reid/add_camera",
+        {
+          method: "POST",
+          headers: {
+            accept: "application/json",
+            Authorization: `Bearer ${getCookie("access_token")}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newCamera),
+        }
+      );
+      if (response.status === 200) {
+        const data = await response.json();
+        // Handle success response
+        setOpenDialog(false);
+        setNewCamera({
+          ip: "",
+          username: "",
+          password: "",
+        });
+        console.log("Camera added successfully!");
+      } else {
+        setErrorMessage("Camera is not online. Please try again later.");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-//   return null; // Return null if the token is not found in cookies
-// }
+  // Fetch camera list
+  const fetchCameraList = async () => {
+    try {
+      const response = await fetch(
+        "http://34.170.11.146/live-camera-reid/list_cameras",
+        {
+          headers: {
+            accept: "application/json",
+            Authorization: `Bearer ${getCookie("access_token")}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        const data = await response.json();
+        // Handle success response
+        setCameraOptions(data.cameras);
+        console.log("Camera list is working fine!");
+      } else {
+        setErrorMessage("Error fetching camera list. Please try again.");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
+  // Call fetchCameraList on component mount
+  useEffect(() => {
+    fetchCameraList();
+  }, []);
 
-// const Dashboard = () => {
-//   const theme = useTheme();
-//   const smScreen = useMediaQuery(theme.breakpoints.up("sm"));
-//   const colors = tokens(theme.palette.mode);
-//   const [uploadedImage, setUploadedImage] = useState(null);
-//   const [openCameraDialog, setOpenCameraDialog] = useState(false);
-//   const [cameras, setCameras] = useState([]);
-//   const [errorMessage, setErrorMessage] = useState("");
-//   const [bearerToken, setBearerToken] = useState(null);
-//   const [selectedCamera, setSelectedCamera] = useState(""); // Add the selectedCamera state
+  // Handle target image upload
+  const handleTargetImageUpload = (event) => {
+    const file = event.target.files[0];
+    setTargetImage(file);
+  };
 
-//   useEffect(() => {
-//     fetchCameraList();
-//   }, []);
+  // Submit form for person re-identification
+  const handleSubmit = async () => {
+    try {
+      // Perform necessary validations
+      if (!selectedCamera || !targetImage) {
+        setErrorMessage("Please select a camera and upload a target image.");
+        return;
+      }
 
-//   const fetchCameraList = () => {
-//     const apiUrl = "http://34.170.11.146/live-camera-reid/list_cameras";
-//     const authToken = getBearerTokenFromCookies();
-//     console.log("Bearer: " + authToken);
-//     axios.get(apiUrl, {
-//       headers: {
-//         "Content-Type": "application/json",
-//         Accept: "application/json",
-//         Authorization: `Bearer ${authToken}`,
-//       },
-//     })
-//       .then((response) => {
-//         console.log(response.data);
-//         setCameras(response.data.cameras);
-//       })
-//       .catch((error) => {
-//         console.error("Error fetching camera list:", error);
-//         setErrorMessage("Failed to fetch camera list");
-//       });
-//   };
+      // Prepare form data
+      const formData = new FormData();
+      formData.append("target_image", targetImage);
 
-//   const handleImageUpload = (event) => {
-//     const file = event.target.files[0];
-//     setUploadedImage(file);
-//   };
+      const response = await fetch(
+        `http://34.170.11.146/live-camera-reid/upload-target-image?camera_ip=${selectedCamera}`,
+        {
+          method: "POST",
+          headers: {
+            accept: "application/json",
+            Authorization: `Bearer ${getCookie("access_token")}`,
+          },
+          body: formData,
+        }
+      );
+      const data = await response.json();
+      setDisplayMessage(
+        `Person re-identification in progress. Please wait... Queue Number: ${data.queue_number}, Email: ${data.email}`
+      );
 
-//   const handleStartReidentify = () => {
-//     // Add your logic for starting the re-identification process
-//   };
+      // Handle success or error response
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-//   const handleAddCamera = () => {
-//     setOpenCameraDialog(true);
-//   };
+  // Function to get cookie value
+  function getCookie(name) {
+    const cookieValue = document.cookie.match(
+      "(^|;)\\s*" + name + "\\s*=\\s*([^;]+)"
+    );
+    return cookieValue ? cookieValue.pop() : "";
+  }
 
-//   const handleCloseCameraDialog = () => {
-//     setOpenCameraDialog(false);
-//   };
+  return (
+    <Box m="20px">
+      {/* HEADER */}
+      <Box
+        display={smScreen ? "flex" : "block"}
+        flexDirection={smScreen ? "row" : "column"}
+        justifyContent={smScreen ? "space-between" : "start"}
+        alignItems={smScreen ? "center" : "start"}
+        m="10px 0"
+      >
+        <Header
+          title="PERSON RE-IDENTIFICATION"
+          subtitle="Re-identify a person via live cameras"
+        />
 
-//   const handleSaveCamera = () => {
-//     const ip = document.getElementById("ip-address").value;
-//     const username = document.getElementById("username").value;
-//     const password = document.getElementById("password").value;
+        <Box>
+          <Button
+            sx={{
+              backgroundColor: colors.blueAccent[700],
+              color: colors.grey[100],
+              fontSize: "14px",
+              fontWeight: "bold",
+              padding: "10px 20px",
+            }}
+          >
+            Start Re-Identify
+          </Button>
+        </Box>
+      </Box>
 
-//     const apiUrl = "http://127.0.0.1:8000/live-camera-reid/add_camera";
-//     const requestBody = JSON.stringify({ ip, username, password });
+      {/* GRID */}
+      <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+        {/* First Box: Add Live Cameras */}
+        <Grid item xs={12} sm={12} md={6} lg={4} xl={4}>
+          <Box
+            width="100%"
+            backgroundColor={colors.primary[400]}
+            display="flex"
+          >
+            <Box
+              flexGrow={1}
+              onClick={handleAddCamera}
+              style={{ cursor: "pointer" }}
+            >
+              <StatBox
+                title="Add Live Cameras"
+                subtitle="Add a live camera option"
+                icon={
+                  <VideoLibraryOutlinedIcon
+                    sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
+                  />
+                }
+              />
+            </Box>
+          </Box>
+        </Grid>
 
-//     axios.post(apiUrl, requestBody, {
-//       headers: {
-//         "Content-Type": "application/json",
-//         Accept: "application/json",
-//       },
-//     })
-//       .then((response) => {
-//         const newCamera = { ip, username, password };
-//         setCameras((prevCameras) => [...prevCameras, newCamera]);
-//         setOpenCameraDialog(false);
-//       })
-//       .catch((error) => {
-//         console.error("Error adding camera:", error);
-//         setErrorMessage("The camera is not online");
-//       });
-//   };
+        {/* Second Box: Cameras List */}
+        <Grid item xs={12} sm={12} md={6} lg={4} xl={4}>
+          <Box
+            width="100%"
+            backgroundColor={colors.primary[400]}
+            display="flex"
+          >
+            <Box flexGrow={1}>
+              <Typography variant="h6">Cameras List</Typography>
+              {/* Display list of cameras */}
+              {cameraOptions.length > 0 ? (
+                <Select
+                  value={selectedCamera}
+                  onChange={(e) => setSelectedCamera(e.target.value)}
+                >
+                  {cameraOptions.map((camera) => (
+                    <MenuItem key={camera.ip} value={camera.ip}>
+                      {camera.ip}
+                    </MenuItem>
+                  ))}
+                </Select>
+              ) : (
+                <Typography variant="body2">No cameras available</Typography>
+              )}
+            </Box>
+          </Box>
+        </Grid>
 
-//   const handleDeleteCamera = (index) => {
-//     setCameras((prevCameras) => prevCameras.filter((_, i) => i !== index));
-//   };
+        {/* Third Box: Upload Target Image */}
+        <Grid item xs={12} sm={12} md={6} lg={4} xl={4}>
+          <Box
+            width="100%"
+            backgroundColor={colors.primary[400]}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            flexDirection="column"
+            style={{ cursor: "pointer" }}
+            onClick={() => {
+              document.getElementById("target-image-upload").click();
+            }}
+          >
+            <input
+              type="file"
+              id="target-image-upload"
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={handleTargetImageUpload}
+            />
+            <Typography variant="h6">Upload Target Image</Typography>
+            {targetImage && (
+              <Box mt={2}>
+                <img
+                  src={URL.createObjectURL(targetImage)}
+                  alt="Target"
+                  style={{ maxWidth: "100%", maxHeight: "150px" }}
+                />
+              </Box>
+            )}
+          </Box>
+        </Grid>
+      </Grid>
 
-//   return (
-//     <Box m="20px">
-//       {/* HEADER */}
-//       <Box
-//         display={smScreen ? "flex" : "block"}
-//         flexDirection={smScreen ? "row" : "column"}
-//         justifyContent={smScreen ? "space-between" : "start"}
-//         alignItems={smScreen ? "center" : "start"}
-//         m="10px 0"
-//       >
-//         <Header title="DASHBOARD" subtitle="Welcome to your dashboard" />
-//         <Box>
-//           <Button
-//             sx={{
-//               backgroundColor: colors.blueAccent[600],
-//               color: colors.grey[100],
-//               fontSize: "14px",
-//               fontWeight: "bold",
-//               padding: "10px 20px",
-//             }}
-//             onClick={handleStartReidentify}
-//           >
-//             Start Re-Identify
-//           </Button>
-//         </Box>
-//       </Box>
+      {/* Display messages or errors */}
+      {displayMessage && <p>{displayMessage}</p>}
+      {errorMessage && (
+        <p style={{ color: "red" }}>{errorMessage}</p>
+      )}
 
-//       {/* GRID & CHARTS */}
-//       <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-//         {cameras.map((camera, index) => (
-//           <Grid key={index} item xs={12} sm={12} md={6} lg={4} xl={4}>
-//             <Box
-//               width="100%"
-//               backgroundColor={colors.primary[400]}
-//               display="flex"
-//               alignItems="center"
-//               justifyContent="center"
-//             >
-//               {/* Updated Box */}
-//               <Box
-//                 display="flex"
-//                 flexDirection="column"
-//                 alignItems="center"
-//                 justifyContent="center"
-//                 p={2}
-//               >
-//                 <Typography variant="h6" sx={{ color: colors.grey[100] }}>
-//                   Camera {index + 1}
-//                 </Typography>
-//                 <IconButton
-//                   sx={{
-//                     backgroundColor: colors.blueAccent[600],
-//                     color: colors.grey[100],
-//                     fontSize: "26px",
-//                   }}
-//                   onClick={() => handleDeleteCamera(index)}
-//                 >
-//                   <VideoLibraryOutlinedIcon />
-//                 </IconButton>
-//                 <IconButton
-//                   sx={{
-//                     backgroundColor: colors.red[700],
-//                     color: colors.grey[100],
-//                     fontSize: "26px",
-//                   }}
-//                   onClick={() => handleDeleteCamera(index)}
-//                 >
-//                   <DeleteOutlinedIcon />
-//                 </IconButton>
-//               </Box>
-//             </Box>
-//           </Grid>
-//         ))}
+      {/* Submit button */}
+      <Button onClick={handleSubmit}>Re-Identify Person</Button>
 
-//         <Grid item xs={12} sm={12} md={6} lg={4} xl={4}>
-//           <Box
-//             width="100%"
-//             backgroundColor={colors.primary[400]}
-//             display="flex"
-//             alignItems="center"
-//             justifyContent="center"
-//           >
-//             {/* Add Camera Box */}
-//             <Box
-//               display="flex"
-//               flexDirection="column"
-//               alignItems="center"
-//               justifyContent="center"
-//               p={2}
-//             >
-//               <IconButton
-//                 sx={{
-//                   backgroundColor: colors.blueAccent[600],
-//                   color: colors.grey[100],
-//                   fontSize: "26px",
-//                 }}
-//                 onClick={handleAddCamera}
-//               >
-//                 <VideoLibraryOutlinedIcon />
-//               </IconButton>
-//               <Typography
-//                 variant="subtitle1"
-//                 sx={{ color: colors.grey[100], mt: 1 }}
-//               >
-//                 Add Camera
-//               </Typography>
-//             </Box>
-//           </Box>
-//         </Grid>
+      {/* Dialog for adding camera */}
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+        <DialogContent>
+          <Typography variant="h6">Add Live Camera</Typography>
+          <TextField
+            label="IP Address"
+            value={newCamera.ip}
+            onChange={(e) =>
+              setNewCamera({ ...newCamera, ip: e.target.value })
+            }
+          />
+          <TextField
+            label="Username"
+            value={newCamera.username}
+            onChange={(e) =>
+              setNewCamera({ ...newCamera, username: e.target.value })
+            }
+          />
+          <TextField
+            label="Password"
+            value={newCamera.password}
+            onChange={(e) =>
+              setNewCamera({ ...newCamera, password: e.target.value })
+            }
+          />
+          <Button onClick={handleSaveCamera}>Save</Button>
+        </DialogContent>
+      </Dialog>
+    </Box>
+  );
+};
 
-//         {/* Camera Dropdown */}
-//         <Grid item xs={12} sm={12} md={6} lg={4} xl={4}>
-//           <Box
-//             width="100%"
-//             backgroundColor={colors.primary[400]}
-//             display="flex"
-//             alignItems="center"
-//             justifyContent="center"
-//           >
-//             <Box
-//               display="flex"
-//               flexDirection="column"
-//               alignItems="center"
-//               justifyContent="center"
-//               p={2}
-//             >
-//               <Typography variant="h6" sx={{ color: colors.grey[100] }}>
-//                 Camera List
-//               </Typography>
-//               <Select
-//                 value={selectedCamera} // Bind the selected camera state here
-//                 onChange={(event) => setSelectedCamera(event.target.value)} // Add the camera selection handler here
-//                 style={{ color: colors.grey[100], mt: 1 }}
-//               >
-//                 {cameras.map((camera, index) => (
-//                   <MenuItem key={index} value={camera.ip}>
-//                     {`Camera ${index + 1}`}
-//                   </MenuItem>
-//                 ))}
-//               </Select>
-//             </Box>
-//           </Box>
-//         </Grid>
-//       </Grid>
-
-//       {/* Camera Dialog */}
-//       <Dialog
-//         open={openCameraDialog}
-//         onClose={handleCloseCameraDialog}
-//         aria-labelledby="camera-dialog-title"
-//       >
-//         <DialogTitle id="camera-dialog-title">Add Camera</DialogTitle>
-//         <DialogContent>
-//           <DialogContentText>
-//             Please enter the IP address, username, and password for the camera.
-//           </DialogContentText>
-//           <Box display="flex" flexDirection="column">
-//             <TextField
-//               id="ip-address"
-//               label="IP Address"
-//               variant="outlined"
-//               margin="dense"
-//             />
-//             <TextField
-//               id="username"
-//               label="Username"
-//               variant="outlined"
-//               margin="dense"
-//             />
-//             <TextField
-//               id="password"
-//               label="Password"
-//               variant="outlined"
-//               margin="dense"
-//               type="password"
-//             />
-//           </Box>
-//           {errorMessage && (
-//             <Typography variant="body1" sx={{ color: "red" }}>
-//               {errorMessage}
-//             </Typography>
-//           )}
-//         </DialogContent>
-//         <DialogActions>
-//           <Button onClick={handleCloseCameraDialog}>Cancel</Button>
-//           <Button onClick={handleSaveCamera}>Save</Button>
-//         </DialogActions>
-//       </Dialog>
-//     </Box>
-//   );
-// };
-
-// export default Dashboard;
+export default PersonReidentificationPage;
