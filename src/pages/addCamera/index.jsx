@@ -16,6 +16,43 @@ import { tokens } from "../../theme";
 import VideoLibraryOutlinedIcon from "@mui/icons-material/VideoLibraryOutlined";
 import Header from "../../components/Header";
 import StatBox from "../../components/StatBox";
+import InputLabel from "@mui/material/InputLabel";
+
+// Camera Stream component
+const CameraStream = ({ selectedCameraIp }) => {
+  const canvasRef = React.useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const context = canvas.getContext("2d");
+
+    const socket = new WebSocket(
+      `ws://127.0.0.1:8000/live-camera-reid/stream_camera/${selectedCameraIp}`
+    );
+    socket.binaryType = "arraybuffer";
+
+    socket.onmessage = function (event) {
+      if (event.data instanceof ArrayBuffer) {
+        const buffer = new Uint8Array(event.data);
+        const blob = new Blob([buffer], { type: "image/jpeg" });
+
+        const image = new Image();
+        image.onload = function () {
+          context.clearRect(0, 0, canvas.width, canvas.height);
+          context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        };
+        image.src = URL.createObjectURL(blob);
+      }
+    };
+
+    socket.onclose = function () {
+      console.error(socket);
+      alert("Camera stream connection closed");
+    };
+  }, [selectedCameraIp]);
+
+  return <canvas ref={canvasRef} width="640" height="480" />;
+};
 
 const PersonReidentificationPage = () => {
   // State variables
@@ -33,6 +70,7 @@ const PersonReidentificationPage = () => {
     username: "",
     password: "",
   });
+  const [showCameraStream, setShowCameraStream] = useState(false);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const smScreen = useMediaQuery(theme.breakpoints.up("sm"));
@@ -46,7 +84,7 @@ const PersonReidentificationPage = () => {
   const handleSaveCamera = async () => {
     try {
       const response = await fetch(
-        "http://34.170.11.146/live-camera-reid/add_camera",
+        "http://127.0.0.1:8000/live-camera-reid/add_camera",
         {
           method: "POST",
           headers: {
@@ -58,6 +96,7 @@ const PersonReidentificationPage = () => {
         }
       );
       if (response.status === 200) {
+        const data = await response.json();
         // Handle success response
         setOpenDialog(false);
         setNewCamera({
@@ -78,7 +117,7 @@ const PersonReidentificationPage = () => {
   const fetchCameraList = async () => {
     try {
       const response = await fetch(
-        "http://34.170.11.146/live-camera-reid/list_cameras",
+        "http://127.0.0.1:8000/live-camera-reid/list_cameras",
         {
           headers: {
             accept: "application/json",
@@ -98,7 +137,7 @@ const PersonReidentificationPage = () => {
       console.error(error);
     }
   };
-  
+
   // Call fetchCameraList on component mount
   useEffect(() => {
     fetchCameraList();
@@ -118,13 +157,13 @@ const PersonReidentificationPage = () => {
         setErrorMessage("Please select a camera and upload a target image.");
         return;
       }
-  
+
       // Prepare form data
       const formData = new FormData();
       formData.append("target_image", targetImage);
-  
+
       const response = await fetch(
-        `http://34.170.11.146/live-camera-reid/upload-target-image?camera_ip=${selectedCamera}`,
+        `http://127.0.0.1:8000/live-camera-reid/upload-target-image?camera_ip=${selectedCamera}`,
         {
           method: "POST",
           headers: {
@@ -134,17 +173,17 @@ const PersonReidentificationPage = () => {
           body: formData,
         }
       );
-  
-      // Open camera_stream_test.html in a new window/tab
-      const streamUrl = `camera_stream_test.html?selectedCameraIp=${selectedCamera}`;
-      window.open(streamUrl, "_blank");
-  
+      const data = await response.json();
+
+      // Show the camera stream
+      setShowCameraStream(true);
+
       setDisplayMessage(`Person re-identification in progress.`);
     } catch (error) {
       console.error(error);
     }
   };
-  
+
   // Function to get cookie value
   function getCookie(name) {
     const cookieValue = document.cookie.match(
@@ -280,9 +319,6 @@ const PersonReidentificationPage = () => {
         <p style={{ color: "red" }}>{errorMessage}</p>
       )}
 
-      {/* Submit button
-      <Button onClick={handleSubmit}>Re-Identify Person</Button> */}
-
       {/* Dialog for adding camera */}
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
         <DialogContent>
@@ -311,12 +347,27 @@ const PersonReidentificationPage = () => {
 
           <Button onClick={handleSaveCamera}>Save</Button>
           {/* Display messages or errors */}
-      {displayMessage && <p>{displayMessage}</p>}
-      {errorMessage && (
-        <p style={{ color: "red" }}>{errorMessage}</p>
-      )}
+          {displayMessage && <p>{displayMessage}</p>}
+          {errorMessage && (
+            <p style={{ color: "red" }}>{errorMessage}</p>
+          )}
         </DialogContent>
       </Dialog>
+
+      {/* Camera Stream */}
+      {showCameraStream && (
+        <Box
+          width="100%"
+          backgroundColor={colors.primary[400]}
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          mt={4}
+          p={2}
+        >
+          <CameraStream selectedCameraIp={selectedCamera} />
+        </Box>
+      )}
     </Box>
   );
 };

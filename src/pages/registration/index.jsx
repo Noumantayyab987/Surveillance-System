@@ -53,7 +53,7 @@ function SignInSide() {
   const handlePasswordChange = (event) => {
     const newPassword = event.target.value;
     setPassword(newPassword);
-    setPasswordError(validatePassword(newPassword) ? '' : 'Password must be at least 8 characters');
+    setPasswordError(validatePassword(newPassword) ? '' : 'Password must be at least 8 characters and numbers combination ');
   };
 
   const handleUsernameChange = (event) => {
@@ -157,9 +157,18 @@ function SignInSide() {
   };
 
   const validatePassword = (password) => {
-    // Minimum 6 characters validation
-    return password.length >= 3;
+    // Minimum 8 characters validation
+    if (password.length < 8) {
+      return false;
+    }
+  
+    // Alphabets and numbers validation
+    const hasAlphabet = /[a-zA-Z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+  
+    return hasAlphabet && hasNumber;
   };
+  
 
   const validateUsername = (username) => {
     // Minimum 4 characters validation
