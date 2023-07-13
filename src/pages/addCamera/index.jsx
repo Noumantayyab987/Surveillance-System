@@ -71,6 +71,7 @@ const PersonReidentificationPage = () => {
     password: "",
   });
   const [showCameraStream, setShowCameraStream] = useState(false);
+  const [reidentificationRunning, setReidentificationRunning] = useState(false);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const smScreen = useMediaQuery(theme.breakpoints.up("sm"));
@@ -153,17 +154,19 @@ const PersonReidentificationPage = () => {
   const handleSubmit = async () => {
     try {
       // Perform necessary validations
-      if (!selectedCamera || !targetImage) {
-        setErrorMessage("Please select a camera and upload a target image.");
+      if (!selectedCamera) {
+        setErrorMessage("Please select a camera.");
         return;
       }
-
+  
       // Prepare form data
       const formData = new FormData();
-      formData.append("target_image", targetImage);
-
+      if (targetImage) {
+        formData.append("target_image", targetImage);
+      }
+  
       const response = await fetch(
-        `http://127.0.0.1:8000/live-camera-reid/upload-target-image?camera_ip=${selectedCamera}`,
+        `http://127.0.0.1:8000/live-camera-reid/upload-target-image?camera_ip=${encodeURIComponent(selectedCamera)}`,
         {
           method: "POST",
           headers: {
@@ -174,11 +177,34 @@ const PersonReidentificationPage = () => {
         }
       );
       const data = await response.json();
-
+  
       // Show the camera stream
       setShowCameraStream(true);
-
+  
+      if (!targetImage) {
+        setReidentificationRunning(true);
+      }
+  
       setDisplayMessage(`Person re-identification in progress.`);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
+
+  // Stop re-identification process
+  const handleStopReidentify = async () => {
+    try {
+      // Perform necessary operations to stop the re-identification
+      // ...
+
+      // Hide the camera stream
+      setShowCameraStream(false);
+
+      // Reset messages and errors
+      setDisplayMessage("");
+      setErrorMessage("");
+      setReidentificationRunning(false);
     } catch (error) {
       console.error(error);
     }
@@ -208,18 +234,23 @@ const PersonReidentificationPage = () => {
         />
 
         <Box>
-          <Button
-            sx={{
-              backgroundColor: colors.blueAccent[700],
-              color: colors.grey[100],
-              fontSize: "14px",
-              fontWeight: "bold",
-              padding: "10px 20px",
-            }}
-            onClick={handleSubmit}
-          >
-            Start Re-Identify
-          </Button>
+          {reidentificationRunning ? (
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={handleStopReidentify}
+            >
+              Stop Re-Identify
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSubmit}
+            >
+              Start Re-Identify
+            </Button>
+          )}
         </Box>
       </Box>
 

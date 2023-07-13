@@ -53,7 +53,7 @@ function SignInSide() {
   const handlePasswordChange = (event) => {
     const newPassword = event.target.value;
     setPassword(newPassword);
-    setPasswordError(validatePassword(newPassword) ? '' : 'Password must be at least 8 characters and numbers combination ');
+    setPasswordError(validatePassword(newPassword) ? '' : 'Passwords must be at least 8 characters and a number combination.');
   };
 
   const handleUsernameChange = (event) => {
