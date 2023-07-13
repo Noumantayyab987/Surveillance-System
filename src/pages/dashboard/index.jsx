@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, Typography, useTheme, useMediaQuery } from "@mui/material";
+import {
+  Box,
+  Button,
+  Typography,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { tokens } from "../../theme";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
@@ -15,41 +21,9 @@ const Dashboard = () => {
   const smScreen = useMediaQuery(theme.breakpoints.up("sm"));
   const colors = tokens(theme.palette.mode);
 
-  const [userData, setUserData] = useState(null);
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const accessToken = getCookieValue("access_token");
-        if (accessToken) {
-          const response = await fetch("http://34.170.11.146/user/me", {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              accept: "application/json",
-            },
-          });
-          if (response.ok) {
-            const data = await response.json();
-            setUserData(data);
-          } else {
-            console.error("Failed to fetch user data:", response.status);
-            if (response.status === 401) {
-              // Clear the access token from cookies
-              document.cookie =
-                "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-              console.log("Access token expired. Cleared from cookies.");
-            }
-          }
-        } else {
-          console.error("Access token not found in cookies.");
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
-
-    fetchUserData();
-  }, []);
+  const [videoCount, setVideoCount] = useState(0);
+  const [cameraCount, setCameraCount] = useState(0);
+  const [totalReidCount, setTotalReidCount] = useState(0);
 
   const getCookieValue = (name) => {
     const cookies = document.cookie.split("; ");
@@ -62,23 +36,73 @@ const Dashboard = () => {
     return null;
   };
 
+  useEffect(() => {
+    const fetchVideoCount = async () => {
+      try {
+        const accessToken = getCookieValue("access_token");
+        if (accessToken) {
+          const response = await fetch(
+            "http://34.170.11.146/video-reid/get-total-reid-videos",
+            {
+              headers: {
+                accept: "application/json",
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          );
+          if (response.ok) {
+            const data = await response.json();
+            setVideoCount(data.total_videos);
+          } else {
+            console.error("Failed to fetch video count:", response.status);
+          }
+        } else {
+          console.error("Access token not found in cookies.");
+        }
+      } catch (error) {
+        console.error("Error fetching video count:", error);
+      }
+    };
+    
+    const fetchCameraCount = async () => {
+      try {
+        const accessToken = getCookieValue("access_token");
+        if (accessToken) {
+          const response = await fetch(
+            "http://34.170.11.146/live-camera-reid/get-total-cameras",
+            {
+              headers: {
+                accept: "application/json",
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          );
+          if (response.ok) {
+            const data = await response.json();
+            setCameraCount(data.total_cameras);
+          } else {
+            console.error("Failed to fetch camera count:", response.status);
+          }
+        } else {
+          console.error("Access token not found in cookies.");
+        }
+      } catch (error) {
+        console.error("Error fetching camera count:", error);
+      }
+    };
+    
+
+    fetchVideoCount();
+    fetchCameraCount();
+  }, []);
+
+  useEffect(() => {
+    setTotalReidCount(videoCount + cameraCount);
+  }, [videoCount, cameraCount]);
+
   return (
     <Box m="20px">
       {/* HEADER */}
-      {userData ? (
-        <>
-          <Typography variant="body1" color="textSecondary">
-            Name: {userData.name}
-          </Typography>
-          <Typography variant="body1" color="textSecondary">
-            Email: {userData.email}
-          </Typography>
-        </>
-      ) : (
-        <Typography variant="body1" color="textSecondary">
-          Loading user data...
-        </Typography>
-      )}
       <Box
         display={smScreen ? "flex" : "block"}
         flexDirection={smScreen ? "row" : "column"}
@@ -115,7 +139,7 @@ const Dashboard = () => {
             justifyContent="center"
           >
             <StatBox
-              title="12,361"
+              title={videoCount}
               subtitle="Re-Identify with Video Footage"
               icon={
                 <VideoLibraryIcon
@@ -134,7 +158,7 @@ const Dashboard = () => {
             justifyContent="center"
           >
             <StatBox
-              title="431,225"
+              title={cameraCount}
               subtitle="Re-Identify with Live-Cameras"
               icon={
                 <CameraAltIcon
@@ -153,7 +177,7 @@ const Dashboard = () => {
             justifyContent="center"
           >
             <StatBox
-              title="32,441"
+              title={totalReidCount}
               subtitle="How Many Times You Re-identify persons"
               icon={
                 <ScheduleIcon
@@ -163,25 +187,7 @@ const Dashboard = () => {
             />
           </Box>
         </Grid>
-        <Grid xs={12} sm={12} md={6} lg={3} xl={3}>
-          <Box
-            width="100%"
-            backgroundColor={colors.primary[400]}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <StatBox
-              title="1,325,134"
-              subtitle="Accuracy Rate"
-              icon={
-                <AssessmentIcon
-                  sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
-                />
-              }
-            />
-          </Box>
-        </Grid>
+        
       </Grid>
     </Box>
   );
